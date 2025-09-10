@@ -123,7 +123,6 @@
       <div class="actions">
         <button id="convert" class="primary">Convertir</button>
         <button id="swap">Intercambiar</button>
-        
       </div>
 
       <div class="result" id="output">—</div>
@@ -152,8 +151,8 @@
 
       const $ = (id) => document.getElementById(id);
       const todayStr = () => new Date().toISOString().slice(0,10);
-  const CACHE_KEY = 'ratesCacheV1';
-  let IN_MEMORY_RATES = null;
+      const CACHE_KEY = 'ratesCacheV1';
+      let IN_MEMORY_RATES = null;
 
       function loadCache(){
         try {
@@ -173,18 +172,18 @@
         return null;
       }
 
-  function currentRates(){
-    if (IN_MEMORY_RATES) return { ...IN_MEMORY_RATES };
-    const c = getRatesFromCache();
-    if(!c) return {...DEFAULTS};
-    const out = {...DEFAULTS};
-    for(const k of Object.keys(c.rates)){
-      if(SUPPORTED.includes(k)) out[k] = Number(c.rates[k]);
-    }
-    return out;
-  }
+      function currentRates(){
+        if (IN_MEMORY_RATES) return { ...IN_MEMORY_RATES };
+        const c = getRatesFromCache();
+        if(!c) return {...DEFAULTS};
+        const out = {...DEFAULTS};
+        for(const k of Object.keys(c.rates)){
+          if(SUPPORTED.includes(k)) out[k] = Number(c.rates[k]);
+        }
+        return out;
+      }
 
-  async function fetchRates(){
+      async function fetchRates(){
         const url = 'https://api.exchangerate.host/latest?base=USD';
         const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
         if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -194,8 +193,8 @@
         for(const k of SUPPORTED){
           if(typeof data.rates[k] === 'number') out[k] = data.rates[k];
         }
-    return out;
-  }
+        return out;
+      }
 
   async function fetchServerRates(){
     try {
@@ -209,11 +208,8 @@
       }
       IN_MEMORY_RATES = out;
       saveCache({ last_updated: data.last_updated, day: todayStr(), fetch_count: 2, rates: out });
-      setMeta({ last_updated: data.last_updated });
       const badge = document.getElementById('updatedBadge');
       if (badge){
-        const when = formatMadridShort(data.last_updated);
-        badge.textContent = when ? `divisas actualizadas · ${when}` : 'divisas actualizadas';
         badge.style.display = 'block';
       }
       return out;
@@ -223,104 +219,10 @@
     }
   }
 
-      function remainingUpdates(){
-        const c = loadCache();
-        if(!c || c.day !== todayStr()) return 2;
-        const used = Number(c.fetch_count || 0);
-        return Math.max(0, 2 - used);
-      }
-
-      async function updateFromAPI(auto=false){
-        const remain = remainingUpdates();
-        if(remain <= 0){
-          if(auto) setLimitText();
-          else alert('Límite diario alcanzado (2 actualizaciones).');
-          return false;
-        }
-        try {
-          const rates = await fetchRates();
-          const c = loadCache() || {};
-          const day = todayStr();
-          const count = (c.day === day ? Number(c.fetch_count||0) : 0) + 1;
-          const cacheData = {
-            last_updated: new Date().toISOString(),
-            day,
-            fetch_count: count,
-            rates,
-          };
-          saveCache(cacheData);
-          setMeta(cacheData);
-          setLimitText();
-          return true;
-        } catch (e){
-          console.error(e);
-          if(!auto) alert('No se pudo actualizar desde la API.');
-          return false;
-        }
-      }
-
       function updateCurrencySymbol(){
         const from = $('from').value;
         $('currencySymbol').textContent = SYMBOLS[from] || '';
       }
-
-      function msUntilNext(hour){
-        const now = new Date();
-        const target = new Date(now);
-        target.setHours(hour, 0, 0, 0);
-        if (target <= now) target.setDate(target.getDate() + 1);
-        return target - now;
-      }
-
-      function scheduleDailyUpdates(){
-        const schedule = (hour) => {
-          const delay = msUntilNext(hour);
-          setTimeout(function run(){
-            updateFromAPI(true).then(convert);
-            setTimeout(run, 24*60*60*1000);
-          }, delay);
-        };
-        schedule(0);  // 12am
-        schedule(12); // 12pm
-      }
-
-      function formatMadridShort(iso){
-        try {
-          const d = new Date(iso);
-          const parts = new Intl.DateTimeFormat('es-ES', {
-            timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit',
-            timeZoneName: 'short', hour12: false
-          }).formatToParts(d);
-          const h = parts.find(p=>p.type==='hour')?.value || '';
-          const m = parts.find(p=>p.type==='minute')?.value || '';
-          const tz = parts.find(p=>p.type==='timeZoneName')?.value || '';
-          return `${h}:${m} ${tz}`.trim();
-        } catch { return ''; }
-      }
-
-      function formatMadridLong(iso){
-        try {
-          const d = new Date(iso);
-          return new Intl.DateTimeFormat('es-ES', {
-            timeZone: 'Europe/Madrid', dateStyle: 'medium', timeStyle: 'short'
-          }).format(d);
-        } catch { return iso; }
-      }
-
-      function setMeta(cache){
-        const el = $('meta');
-        if (!el) return;
-        const c = cache || loadCache();
-        el.textContent = c && c.last_updated
-          ? `Última actualización (España): ${formatMadridLong(c.last_updated)}`
-          : '';
-      }
-
-  function setLimitText(){
-    const el = $('limit');
-    if (!el) return;
-    el.textContent = '';
-  }
 
       function convert(){
         const amount = Number(($('amount').value || '').replace(',', '.'));
@@ -341,20 +243,19 @@
         convert();
       }
 
-  async function init(){
-    setMeta();
-    setLimitText();
-    await fetchServerRates();
-    convert();
-    $('convert').addEventListener('click', convert);
-    $('swap').addEventListener('click', swap);
-    $('amount').addEventListener('input', convert);
-    $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); });
-    $('to').addEventListener('change', convert);
-    updateCurrencySymbol();
-  }
+      async function init(){
+        await fetchServerRates();
+        convert();
+        $('convert').addEventListener('click', convert);
+        $('swap').addEventListener('click', swap);
+        $('amount').addEventListener('input', convert);
+        $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); });
+        $('to').addEventListener('change', convert);
+        updateCurrencySymbol();
+      }
 
       init();
     </script>
   </body>
   </html>
+
