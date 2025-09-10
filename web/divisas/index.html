@@ -78,20 +78,21 @@
     </style>
   </head>
   <body>
-    <header style="position:sticky;top:0;z-index:60;background:transparent;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
-      <div style="display:flex;gap:12px;align-items:center;font-family:'Sora',ui-sans-serif,system-ui;font-weight:800">
-        <div style="width:36px;height:36px;border-radius:10px;background:radial-gradient(circle at 35% 35%, #22d3ee, transparent 55%), linear-gradient(135deg,#10b981,#0ea5e9);display:grid;place-items:center;color:#052e2b">✈︎</div>
-        <div>Dael‑viajes</div>
-      </div>
-      <nav style="display:flex;gap:18px;align-items:center;font-weight:700">
-        <a href="/blog" style="color:#e5e7eb;text-decoration:none">Blog</a>
-        <a href="/destinos" style="color:#e5e7eb;text-decoration:none">Destinos</a>
-        <a href="/presupuestos" style="color:#e5e7eb;text-decoration:none">Presupuestos</a>
-        <a href="/consejos" style="color:#e5e7eb;text-decoration:none">Consejos</a>
-        <a href="/diario" style="color:#e5e7eb;text-decoration:none">Diario</a>
-      </nav>
-      <div class="user"><button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
-        <div id="userDropdown" class="dropdown"><div class="dd-header">Dael‑viajes</div><a href="/">Inicio</a><a href="#" id="menuLogout">Cerrar sesión</a></div>
+    <header style="position:sticky;top:0;z-index:60;background:transparent;padding:12px 16px">
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px">
+        <nav style="display:flex;gap:18px;align-items:center;font-weight:700">
+          <a href="/blog" style="color:#e5e7eb;text-decoration:none">Blog</a>
+          <a href="/destinos" style="color:#e5e7eb;text-decoration:none">Destinos</a>
+        </nav>
+        <a href="/" style="justify-self:center"><img src="/assets/logo.svg" alt="Dael‑viajes" style="width:64px;height:64px"></a>
+        <div style="display:flex;gap:18px;align-items:center;justify-content:flex-end">
+          <a href="/presupuestos" style="color:#e5e7eb;text-decoration:none;font-weight:700">Presupuestos</a>
+          <a href="/consejos" style="color:#e5e7eb;text-decoration:none;font-weight:700">Consejos</a>
+          <a href="/diario" style="color:#e5e7eb;text-decoration:none;font-weight:700">Diario</a>
+          <div class="user"><button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
+            <div id="userDropdown" class="dropdown"><div class="dd-header">Dael‑viajes</div><a href="/">Inicio</a><a href="#" id="menuLogout">Cerrar sesión</a></div>
+          </div>
+        </div>
       </div>
     </header>
     <div class="container" style="margin-top:12px">
