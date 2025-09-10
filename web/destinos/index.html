@@ -5,31 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Dael‑viajes · Destinos y guías</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&display=swap" rel="stylesheet">
-  <style>
-    body{margin:0;background:#0b1220;color:#e5e7eb;font-family:'Sora',ui-sans-serif,system-ui}
-    header{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);background:linear-gradient(to bottom, rgba(11,18,32,.85), rgba(11,18,32,.35));padding:10px 16px}
-    .nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
-    .left,.right{display:flex;gap:18px;align-items:center}
-    .right{justify-content:flex-end}
-    .nav a{color:#e5e7eb;text-decoration:none;font-weight:700}
-    .logo{width:64px;height:64px}
-    .wrap{max-width:900px;margin:40px auto;padding:0 20px}
-    .card{background:#0f172a;border:1px solid #1f2937;padding:16px;border-radius:12px;margin-bottom:14px}
-    a{color:#22d3ee}
-  </style>
+  <style>body{margin:0;background:#0b1220;color:#e5e7eb;font-family:'Sora',ui-sans-serif,system-ui}.wrap{max-width:900px;margin:40px auto;padding:0 20px}.card{background:#0f172a;border:1px solid #1f2937;padding:16px;border-radius:12px;margin-bottom:14px}a{color:#22d3ee}</style>
 </head>
 <body>
-  <header>
-    <div class="nav">
-      <div class="left"><a href="/blog">Blog</a></div>
-      <a href="/"><img src="/assets/logo.svg" class="logo" alt="Dael‑viajes"></a>
-      <div class="right">
-        <a href="/presupuestos">Presupuestos</a>
-        <a href="/consejos">Consejos</a>
-        <a href="/diario">Diario</a>
-      </div>
-    </div>
-  </header>
   <div class="wrap">
     <h1>Destinos y guías</h1>
     <div class="card">Rutas, mapas y recomendaciones por país. (En construcción)</div>
@@ -39,3 +17,4 @@
   <script>const sb=window.supabase.createClient('https://ubqsbofiyhearumlmdif.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicXNib2ZpeWhlYXJ1bWxtZGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjczNzUsImV4cCI6MjA3MzEwMzM3NX0.CpXG7JL7sOb1Rdn0BMyqN9MxsV13UMpSwazuhQt8jlE');(async()=>{const {data}=await sb.auth.getUser();if(!data?.user)location.href='/';})();</script>
 </body>
 </html>
+
