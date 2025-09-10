@@ -126,9 +126,13 @@
       <script>
         (function(){
           const m=document.getElementById('dvMobile');
-          document.getElementById('dvBurger')?.addEventListener('click',()=>{m?.classList.add('open');m?.setAttribute('aria-hidden','false')});
-          document.getElementById('dvClose')?.addEventListener('click',()=>{m?.classList.remove('open');m?.setAttribute('aria-hidden','true')});
-          m?.addEventListener('click',(e)=>{ if(e.target===m){ m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }});
+          const b=document.getElementById('dvBurger');
+          const c=document.getElementById('dvClose');
+          function open(){ m?.classList.add('open'); m?.setAttribute('aria-hidden','false'); b?.classList.add('open'); }
+          function close(){ m?.classList.remove('open'); m?.setAttribute('aria-hidden','true'); b?.classList.remove('open'); }
+          b?.addEventListener('click',()=>{ if(m?.classList.contains('open')) close(); else open(); });
+          c?.addEventListener('click', close);
+          m?.addEventListener('click',(e)=>{ if(e.target===m) close(); });
         })();
       </script>
     </header>

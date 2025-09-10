@@ -20,18 +20,18 @@
       .mainnav a.locked { opacity:.5; cursor:not-allowed }
       .nav-logo img{ width:64px; height:64px }
       .hamburger { display:none; width:40px; height:40px; border:1px solid #1f2937; background:#0b1220; border-radius:10px; align-items:center; justify-content:center; cursor:pointer }
-      .hamburger span { display:block; width:18px; height:2px; background:#e5e7eb; position:relative }
-      .hamburger span::before, .hamburger span::after { content:""; position:absolute; left:0; width:18px; height:2px; background:#e5e7eb }
+      .hamburger span { display:block; width:18px; height:2px; background:#e5e7eb; position:relative; transition:.2s transform ease, .2s background ease }
+      .hamburger span::before, .hamburger span::after { content:""; position:absolute; left:0; width:18px; height:2px; background:#e5e7eb; transition:.2s transform ease, .2s top ease }
       .hamburger span::before { top:-6px } .hamburger span::after { top:6px }
-      .mobile-menu { position:fixed; inset:0; background:rgba(2,6,23,.7); backdrop-filter:blur(8px); display:none; z-index:70 }
+      .hamburger.open span { background:transparent }
+      .hamburger.open span::before { top:0; transform:rotate(45deg) }
+      .hamburger.open span::after { top:0; transform:rotate(-45deg) }
+      .mobile-menu { position:fixed; inset:0; background:rgba(2,6,23,.85); backdrop-filter:blur(8px); display:none; z-index:70 }
       .mobile-menu.open { display:block }
-      .mobile-sheet { position:absolute; top:0; right:0; width:86%; max-width:420px; height:100%; background:#f3f4f6; color:#0b1220; border-left:1px solid #e5e7eb; padding:0; overflow:auto }
-      .m-head { position:relative; padding:16px; text-align:center; border-bottom:1px solid #e5e7eb; background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(243,244,246,.9)) }
+      .mobile-sheet { position:absolute; inset:0; background:#f3f4f6; color:#0b1220; padding-top:64px; overflow:auto; display:flex; flex-direction:column; align-items:center }
+      .m-head { position:absolute; top:12px; left:0; right:0; display:flex; justify-content:center; }
       .m-head img { width:88px; height:88px }
-      .m-close { position:absolute; right:14px; top:14px; width:44px; height:44px; border-radius:50%; background:#ffffff; border:1px solid #cbd5e1; display:grid; place-items:center; cursor:pointer }
-      .m-close span { position:relative; width:20px; height:2px; background:#0b1220; transform:rotate(45deg) }
-      .m-close span::after { content:""; position:absolute; inset:0; transform:rotate(90deg); background:#0b1220 }
-      .m-list { padding:10px 12px }
+      .m-list { padding:10px 16px; width:100%; max-width:560px }
       .m-item { display:flex; align-items:center; justify-content:space-between; padding:18px 10px; border-bottom:1px solid #d1d5db; font-weight:700; letter-spacing:.3px }
       .m-item .chev { width:18px; height:18px; border:2px solid #0b1220; border-left:0; border-top:0; transform:rotate(45deg); margin-left:8px }
       .m-social { display:flex; gap:26px; align-items:center; padding:16px 10px }
@@ -100,10 +100,7 @@
 
       <div id="mobileMenu" class="mobile-menu" aria-hidden="true">
         <div class="mobile-sheet">
-          <div class="m-head">
-            <img src="/assets/Dael-viajes.png" alt="Dael‑viajes">
-            <button id="mobileClose" class="m-close" aria-label="Cerrar menú"><span></span></button>
-          </div>
+          <div class="m-head"><img src="/assets/Dael-viajes.png" alt="Dael‑viajes"></div>
           <div class="m-list">
             <a class="m-item" href="/blog">ESPAÑA <i class="chev"></i></a>
             <a class="m-item" href="/destinos">EUROPA <i class="chev"></i></a>
@@ -246,11 +243,11 @@
         });
         // Mobile menu handlers
         const mm = document.getElementById('mobileMenu');
-        const open = document.getElementById('burgerBtn');
-        const close = document.getElementById('mobileClose');
-        open?.addEventListener('click', ()=>{ mm?.classList.add('open'); mm?.setAttribute('aria-hidden','false'); });
-        close?.addEventListener('click', ()=>{ mm?.classList.remove('open'); mm?.setAttribute('aria-hidden','true'); });
-        mm?.addEventListener('click', (e)=>{ if(e.target === mm){ mm.classList.remove('open'); mm.setAttribute('aria-hidden','true'); } });
+        const burger = document.getElementById('burgerBtn');
+        function closeMenu(){ mm?.classList.remove('open'); mm?.setAttribute('aria-hidden','true'); burger?.classList.remove('open'); }
+        function openMenu(){ mm?.classList.add('open'); mm?.setAttribute('aria-hidden','false'); burger?.classList.add('open'); }
+        burger?.addEventListener('click', ()=>{ if(mm?.classList.contains('open')) closeMenu(); else openMenu(); });
+        mm?.addEventListener('click', (e)=>{ if(e.target === mm){ closeMenu(); } });
       })();
     </script>
   </body>
