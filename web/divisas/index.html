@@ -15,6 +15,14 @@
       }
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); margin: 0; }
       .container { position: relative; max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+      .topbar { display:flex; justify-content:flex-end; align-items:center; margin-bottom: 8px; gap: 8px; }
+      .user { position: relative; }
+      .user-btn { background:#0b1220; border:1px solid #1f2937; color:var(--text); padding:8px 12px; border-radius:999px; cursor:pointer; }
+      .dropdown { position:absolute; right:0; top:100%; margin-top:8px; background:#0b1220; border:1px solid #1f2937; border-radius:10px; min-width:200px; box-shadow:0 10px 24px rgba(0,0,0,.35); display:none; }
+      .dropdown.open { display:block; }
+      .dropdown .dd-header { padding:10px 12px; font-size:.85rem; color:var(--muted); border-bottom:1px solid #1f2937; }
+      .dropdown a { display:block; padding:10px 12px; color:var(--text); text-decoration:none; }
+      .dropdown a:hover { background:#111827; }
       h1 { margin: 0 0 12px; font-size: 1.6rem; text-align: center; }
       p.sub { margin: 0 0 20px; color: var(--muted); }
       .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -70,6 +78,19 @@
   </head>
   <body>
     <div class="container">
+      <div class="topbar">
+        <div class="user">
+          <button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
+          <div id="userDropdown" class="dropdown">
+            <div class="dd-header">Tu espacio</div>
+            <a href="#" id="menuProfile">Perfil</a>
+            <a href="#" id="menuPrefs">Preferencias</a>
+            <a href="#" id="menuHistory">Historial</a>
+            <hr style="border:0;border-top:1px solid #1f2937;margin:6px 0;">
+            <a href="#" id="menuLogout">Cerrar sesión</a>
+          </div>
+        </div>
+      </div>
       <h1>Conversor de Divisas</h1>
       <div id="updatedBadge" class="badge" style="display:none">divisas actualizadas</div>
 
@@ -228,6 +249,22 @@
     return data?.user || null;
   }
 
+  function displayUserName(user){
+    const name = user?.user_metadata?.name || (user?.email ? user.email.split('@')[0] : '');
+    const el = document.getElementById('userName');
+    if (el) el.textContent = name || 'Usuario';
+  }
+
+  async function requireAuth(){
+    const user = await getUser();
+    if(!user){
+      window.location.href = '/';
+      return null;
+    }
+    displayUserName(user);
+    return user;
+  }
+
   async function loadPreferences(){
     const user = await getUser();
     if(!user) return; // invitado: no carga preferencias del servidor
@@ -295,6 +332,8 @@
       }
 
       async function init(){
+        const user = await requireAuth();
+        if(!user) return;
         await fetchServerRates();
         await loadPreferences();
         convert();
@@ -304,6 +343,16 @@
         $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); savePreferences(); });
         $('to').addEventListener('change', () => { convert(); savePreferences(); });
         updateCurrencySymbol();
+
+        // User menu
+        const btn = document.getElementById('userBtn');
+        const dd = document.getElementById('userDropdown');
+        btn?.addEventListener('click', (e)=>{ e.preventDefault(); dd?.classList.toggle('open'); });
+        document.addEventListener('click', (e)=>{ if(!dd) return; if(!dd.contains(e.target) && !btn.contains(e.target)) dd.classList.remove('open'); });
+        document.getElementById('menuLogout')?.addEventListener('click', async (e)=>{ e.preventDefault(); await supabase.auth.signOut(); window.location.href = '/'; });
+        document.getElementById('menuPrefs')?.addEventListener('click', (e)=>{ e.preventDefault(); dd?.classList.remove('open'); document.getElementById('from')?.focus(); });
+        document.getElementById('menuProfile')?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Perfil: próximamente.'); });
+        document.getElementById('menuHistory')?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Historial: próximamente.'); });
       }
 
       init();
