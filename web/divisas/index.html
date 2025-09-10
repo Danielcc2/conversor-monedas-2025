@@ -236,8 +236,8 @@
         .from('preferences')
         .select('default_from, default_to')
         .eq('user_id', user.id)
-        .single();
-      if (!error && data){
+        .maybeSingle();
+      if (data){
         if (SUPPORTED.includes(data.default_from)) $('from').value = data.default_from;
         if (SUPPORTED.includes(data.default_to)) $('to').value = data.default_to;
         updateCurrencySymbol();
