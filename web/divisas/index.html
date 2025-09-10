@@ -79,21 +79,39 @@
   </head>
   <body>
     <header style="position:sticky;top:0;z-index:60;background:transparent;padding:12px 16px">
-      <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px">
-        <nav style="display:flex;gap:18px;align-items:center;font-weight:700">
-          <a href="/blog" style="color:#e5e7eb;text-decoration:none">Blog</a>
-          <a href="/destinos" style="color:#e5e7eb;text-decoration:none">Destinos</a>
-        </nav>
+      <style>
+        @media (max-width:720px){ .dv-nav-left,.dv-nav-right{ display:none } .dv-burger{ display:flex } }
+        .dv-burger{ display:none; width:40px;height:40px;border:1px solid #1f2937;background:#0b1220;border-radius:10px;align-items:center;justify-content:center;cursor:pointer }
+        .dv-burger span{ display:block;width:18px;height:2px;background:#e5e7eb;position:relative }
+        .dv-burger span::before,.dv-burger span::after{ content:"";position:absolute;left:0;width:18px;height:2px;background:#e5e7eb }
+        .dv-burger span::before{ top:-6px } .dv-burger span::after{ top:6px }
+        .dv-mobile{ position:fixed;inset:0;background:rgba(2,6,23,.7);backdrop-filter:blur(6px);display:none;z-index:70 }
+        .dv-mobile.open{ display:block }
+        .dv-sheet{ position:absolute;top:0;right:0;width:78%;max-width:340px;height:100%;background:#0b1220;border-left:1px solid #1f2937;padding:16px }
+        .dv-sheet a{ display:block;padding:12px 8px;color:#e5e7eb;text-decoration:none;font-weight:700 }
+        .dv-close{ background:transparent;border:1px solid #1f2937;color:#e5e7eb;padding:8px 10px;border-radius:10px }
+      </style>
+      <div style="display:grid;grid-template-columns:40px auto 40px;align-items:center;gap:18px">
+        <button id="dvBurger" class="dv-burger" aria-label="Abrir menú"><span></span></button>
         <a href="/" style="justify-self:center"><img src="/assets/Dael-viajes.png" alt="Dael‑viajes" style="width:64px;height:64px"></a>
-        <div style="display:flex;gap:18px;align-items:center;justify-content:flex-end">
-          <a href="/presupuestos" style="color:#e5e7eb;text-decoration:none;font-weight:700">Presupuestos</a>
-          <a href="/consejos" style="color:#e5e7eb;text-decoration:none;font-weight:700">Consejos</a>
-          <a href="/diario" style="color:#e5e7eb;text-decoration:none;font-weight:700">Diario</a>
-          <div class="user"><button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
-            <div id="userDropdown" class="dropdown"><div class="dd-header">Dael‑viajes</div><a href="/">Inicio</a><a href="#" id="menuLogout">Cerrar sesión</a></div>
-          </div>
+        <div class="user" style="justify-self:end"><button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
+          <div id="userDropdown" class="dropdown"><div class="dd-header">Dael‑viajes</div><a href="/">Inicio</a><a href="#" id="menuLogout">Cerrar sesión</a></div>
         </div>
       </div>
+      <div id="dvMobile" class="dv-mobile" aria-hidden="true">
+        <div class="dv-sheet">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Menú</strong><button id="dvClose" class="dv-close">Cerrar</button></div>
+          <a href="/blog">Blog</a><a href="/destinos">Destinos</a><a href="/presupuestos">Presupuestos</a><a href="/consejos">Consejos</a><a href="/diario">Diario</a>
+        </div>
+      </div>
+      <script>
+        (function(){
+          const m=document.getElementById('dvMobile');
+          document.getElementById('dvBurger')?.addEventListener('click',()=>{m?.classList.add('open');m?.setAttribute('aria-hidden','false')});
+          document.getElementById('dvClose')?.addEventListener('click',()=>{m?.classList.remove('open');m?.setAttribute('aria-hidden','true')});
+          m?.addEventListener('click',(e)=>{ if(e.target===m){ m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }});
+        })();
+      </script>
     </header>
     <div class="container" style="margin-top:12px">
       <div class="topbar">

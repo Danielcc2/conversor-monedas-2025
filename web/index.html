@@ -19,6 +19,15 @@
       .mainnav a { color:#e5e7eb; text-decoration:none; font-weight:700; font-family:'Sora',ui-sans-serif,system-ui; font-size:1.12rem }
       .mainnav a.locked { opacity:.5; cursor:not-allowed }
       .nav-logo img{ width:64px; height:64px }
+      .hamburger { display:none; width:40px; height:40px; border:1px solid #1f2937; background:#0b1220; border-radius:10px; align-items:center; justify-content:center; cursor:pointer }
+      .hamburger span { display:block; width:18px; height:2px; background:#e5e7eb; position:relative }
+      .hamburger span::before, .hamburger span::after { content:""; position:absolute; left:0; width:18px; height:2px; background:#e5e7eb }
+      .hamburger span::before { top:-6px } .hamburger span::after { top:6px }
+      .mobile-menu { position:fixed; inset:0; background:rgba(2,6,23,.7); backdrop-filter:blur(6px); display:none; z-index:70 }
+      .mobile-menu.open { display:block }
+      .mobile-sheet { position:absolute; top:0; right:0; width:78%; max-width:340px; height:100%; background:#0b1220; border-left:1px solid #1f2937; padding:16px }
+      .mobile-sheet a { display:block; padding:12px 8px; color:#e5e7eb; text-decoration:none; font-weight:700 }
+      .mobile-close { background:transparent; border:1px solid #1f2937; color:#e5e7eb; padding:8px 10px; border-radius:10px; }
       .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: stretch; }
       .nav { display:flex; gap: 24px; align-items:center; font-weight:700; font-family: 'Sora', ui-sans-serif, system-ui; }
       .nav a { color: #e5e7eb; text-decoration:none; font-size: 1rem; }
@@ -48,11 +57,10 @@
         .hero h1 { font-size:2.1rem }
       }
       @media (max-width: 720px){
-        .mainnav { grid-template-columns: 1fr auto; grid-template-rows:auto auto }
-        .nav-left,.nav-right { justify-content:center; grid-column:1 / -1 }
-        .nav-left { order:1 } .nav-right { order:3 }
-        .nav-logo { order:2 }
-        .mainnav a { font-size:.98rem }
+        .mainnav { grid-template-columns: 40px auto 40px }
+        .nav-left,.nav-right { display:none }
+        .hamburger { display:flex }
+        .mainnav a { font-size:1rem }
       }
     </style>
   </head>
@@ -78,8 +86,25 @@
               </div>
             </div>
           </div>
+          <button id="burgerBtn" class="hamburger" aria-label="Abrir menú" title="Menú"><span></span></button>
         </div>
       </header>
+
+      <div id="mobileMenu" class="mobile-menu" aria-hidden="true">
+        <div class="mobile-sheet">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <strong>Menú</strong>
+            <button id="mobileClose" class="mobile-close">Cerrar</button>
+          </div>
+          <a href="/blog">Blog</a>
+          <a href="/destinos">Destinos</a>
+          <a href="/presupuestos">Presupuestos</a>
+          <a href="/consejos">Consejos</a>
+          <a href="/diario">Diario</a>
+          <hr style="border:0;border-top:1px solid #1f2937;margin:10px 0">
+          <a href="/divisas">Conversor</a>
+        </div>
+      </div>
 
       <section class="hero">
         <div>
@@ -203,6 +228,13 @@
         document.querySelectorAll('[data-route].locked')?.forEach(a=>{
           a.addEventListener('click', (e)=>{ e.preventDefault(); alert('Inicia sesión para acceder a esta sección.'); });
         });
+        // Mobile menu handlers
+        const mm = document.getElementById('mobileMenu');
+        const open = document.getElementById('burgerBtn');
+        const close = document.getElementById('mobileClose');
+        open?.addEventListener('click', ()=>{ mm?.classList.add('open'); mm?.setAttribute('aria-hidden','false'); });
+        close?.addEventListener('click', ()=>{ mm?.classList.remove('open'); mm?.setAttribute('aria-hidden','true'); });
+        mm?.addEventListener('click', (e)=>{ if(e.target === mm){ mm.classList.remove('open'); mm.setAttribute('aria-hidden','true'); } });
       })();
     </script>
   </body>
