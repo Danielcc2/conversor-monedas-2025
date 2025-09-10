@@ -19,7 +19,7 @@
       .mainnav a { color:#e5e7eb; text-decoration:none; font-weight:700; font-family:'Sora',ui-sans-serif,system-ui }
       .mainnav a.locked { opacity:.5; cursor:not-allowed }
       .nav-logo img{ width:64px; height:64px }
-      .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; }
+      .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: stretch; }
       .nav { display:flex; gap: 24px; align-items:center; font-weight:700; font-family: 'Sora', ui-sans-serif, system-ui; }
       .nav a { color: #e5e7eb; text-decoration:none; font-size: 1rem; }
       .nav a.locked { opacity:.5; cursor:not-allowed; }
@@ -73,7 +73,7 @@
         <div>
           <h1>Planifica tu próximo viaje con divisas claras</h1>
           <p>Regístrate o inicia sesión para guardar tus preferencias y convertir divisas al instante. Sin complicaciones, con estilo viajero.</p>
-          <div class="card" style="max-width:560px">
+          <div class="card" id="authCard" style="max-width:560px">
             <div style="display:flex; gap:8px; background:#0b1220; border:1px solid #1f2937; padding:4px; border-radius:10px; width:max-content; margin-bottom:12px">
               <button id="tabLogin" class="primary" style="margin:0; padding:8px 12px; background:#10b981; color:#052e2b; border:none; border-radius:8px">Iniciar sesión</button>
               <button id="tabRegister" style="margin:0; padding:8px 12px; background:transparent; color:#e5e7eb; border:none; border-radius:8px">Crear cuenta</button>
@@ -140,8 +140,8 @@
         $('tabLogin').className = isReg ? '' : 'primary';
         $('tabRegister').className = isReg ? 'primary' : '';
       }
-      $('tabLogin').addEventListener('click', ()=> setMode('login'));
-      $('tabRegister').addEventListener('click', ()=> setMode('register'));
+      $('tabLogin').addEventListener('click', ()=> { setMode('login'); syncIlluHeight(); });
+      $('tabRegister').addEventListener('click', ()=> { setMode('register'); syncIlluHeight(); });
       setMode('login');
 
       async function submitAuth(){
@@ -170,7 +170,16 @@
           }
         }catch(e){ msg.textContent = 'Error inesperado.'; }
       }
-      $('authSubmit').addEventListener('click', submitAuth);
+      $('authSubmit').addEventListener('click', async () => { await submitAuth(); syncIlluHeight(); });
+
+      // Igualar altura entre tarjeta de auth e imagen lateral
+      function syncIlluHeight(){
+        const card = document.getElementById('authCard');
+        const illu = document.querySelector('.illu');
+        if(card && illu){ illu.style.height = card.offsetHeight + 'px'; }
+      }
+      window.addEventListener('load', syncIlluHeight);
+      window.addEventListener('resize', () => requestAnimationFrame(syncIlluHeight));
 
       // Si hay sesión, habilitar navegación al cargar; si no, mostrar aviso al pulsar
       (async () => {
