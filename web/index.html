@@ -215,7 +215,11 @@
       saveCache({ last_updated: data.last_updated, day: todayStr(), fetch_count: 2, rates: out });
       setMeta({ last_updated: data.last_updated });
       const badge = document.getElementById('updatedBadge');
-      if (badge) badge.style.display = 'block';
+      if (badge){
+        const when = formatMadridShort(data.last_updated);
+        badge.textContent = when ? `divisas actualizadas · ${when}` : 'divisas actualizadas';
+        badge.style.display = 'block';
+      }
       return out;
     } catch (e) {
       console.warn('No server rates.json yet', e);
@@ -284,10 +288,33 @@
         schedule(12); // 12pm
       }
 
+      function formatMadridShort(iso){
+        try {
+          const d = new Date(iso);
+          const parts = new Intl.DateTimeFormat('es-ES', {
+            timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit',
+            timeZoneName: 'short', hour12: false
+          }).formatToParts(d);
+          const h = parts.find(p=>p.type==='hour')?.value || '';
+          const m = parts.find(p=>p.type==='minute')?.value || '';
+          const tz = parts.find(p=>p.type==='timeZoneName')?.value || '';
+          return `${h}:${m} ${tz}`.trim();
+        } catch { return ''; }
+      }
+
+      function formatMadridLong(iso){
+        try {
+          const d = new Date(iso);
+          return new Intl.DateTimeFormat('es-ES', {
+            timeZone: 'Europe/Madrid', dateStyle: 'medium', timeStyle: 'short'
+          }).format(d);
+        } catch { return iso; }
+      }
+
       function setMeta(cache){
         const c = cache || loadCache();
         if(c && c.last_updated){
-          $('meta').textContent = `Última actualización API: ${c.last_updated}`;
+          $('meta').textContent = `Última actualización (España): ${formatMadridLong(c.last_updated)}`;
         } else {
           $('meta').textContent = 'Usando tasas por defecto/caché.';
         }
