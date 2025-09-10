@@ -73,26 +73,24 @@
         <div>
           <h1>Planifica tu próximo viaje con divisas claras</h1>
           <p>Regístrate o inicia sesión para guardar tus preferencias y convertir divisas al instante. Sin complicaciones, con estilo viajero.</p>
-          <div class="two">
-            <div class="card">
-              <h3>Iniciar sesión</h3>
-              <label for="loginEmail">Email</label>
-              <input id="loginEmail" type="email" placeholder="tú@correo.com" />
-              <label for="loginPass">Contraseña</label>
-              <input id="loginPass" type="password" placeholder="••••••••" />
-              <button id="loginBtn" class="primary">Entrar</button>
+          <div class="card" style="max-width:560px">
+            <div style="display:flex; gap:8px; background:#0b1220; border:1px solid #1f2937; padding:4px; border-radius:10px; width:max-content; margin-bottom:12px">
+              <button id="tabLogin" class="primary" style="margin:0; padding:8px 12px; background:#10b981; color:#052e2b; border:none; border-radius:8px">Iniciar sesión</button>
+              <button id="tabRegister" style="margin:0; padding:8px 12px; background:transparent; color:#e5e7eb; border:none; border-radius:8px">Crear cuenta</button>
             </div>
-            <div class="card">
-              <h3>Crear cuenta</h3>
-              <label for="regName">Nombre de viajero</label>
-              <input id="regName" type="text" placeholder="Aventurero/a" />
-              <label for="regEmail">Email</label>
-              <input id="regEmail" type="email" placeholder="tú@correo.com" />
-              <label for="regPass">Contraseña</label>
-              <input id="regPass" type="password" placeholder="••••••••" />
-              <button id="regBtn" class="primary">Registrarme</button>
-              <p class="hint">Al registrarte se creará tu espacio personal y te llevaremos al conversor.</p>
-            </div>
+            <form id="authForm" onsubmit="return false;">
+              <div id="groupName" style="display:none">
+                <label for="name">Nombre de viajero</label>
+                <input id="name" type="text" placeholder="Aventurero/a" autocomplete="name" />
+              </div>
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="tú@correo.com" autocomplete="email" />
+              <label for="password">Contraseña</label>
+              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+              <button id="authSubmit" class="primary" style="width:100%; margin-top:14px">Entrar</button>
+              <p id="authHint" class="hint" style="margin-top:8px">¿No tienes cuenta? Cambia a “Crear cuenta”.</p>
+              <div id="authMsg" class="hint" style="margin-top:8px; color:#a3e635"></div>
+            </form>
           </div>
         </div>
         <div class="illu" aria-hidden="true"></div>
@@ -130,43 +128,49 @@
         }
       }
 
-      async function register(){
-        const name = $('regName').value.trim();
-        const email = $('regEmail').value.trim().toLowerCase();
-        const pass = $('regPass').value;
-        if(!name || !email || !pass){ alert('Completa todos los campos'); return; }
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password: pass,
-          options: { data: { name } }
-        });
-        if (error) { alert('Error al registrar: ' + error.message); return; }
-        const slug = slugify(name);
-        if (data.session) {
-          history.replaceState({}, '', `#/viajero/${slug}`);
-          enableNavLinks();
-          showUserMenu(name);
-        } else {
-          alert('Revisa tu correo para confirmar el registro.');
-        }
+      // Auth minimalista unificado
+      let mode = 'login'; // 'login' | 'register'
+      function setMode(m){
+        mode = m;
+        const isReg = mode === 'register';
+        $('groupName').style.display = isReg ? 'block' : 'none';
+        $('authSubmit').textContent = isReg ? 'Crear cuenta' : 'Entrar';
+        $('authHint').textContent = isReg ? '¿Ya tienes cuenta? Cambia a “Iniciar sesión”.' : '¿No tienes cuenta? Cambia a “Crear cuenta”.';
+        // estilo de pestañas
+        $('tabLogin').className = isReg ? '' : 'primary';
+        $('tabRegister').className = isReg ? 'primary' : '';
       }
+      $('tabLogin').addEventListener('click', ()=> setMode('login'));
+      $('tabRegister').addEventListener('click', ()=> setMode('register'));
+      setMode('login');
 
-      async function login(){
-        const email = $('loginEmail').value.trim().toLowerCase();
-        const password = $('loginPass').value;
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) { alert('Credenciales inválidas'); return; }
-        // Intentar obtener nombre del perfil si existe
-        const { data: userData } = await supabase.auth.getUser();
-        const name = userData?.user?.user_metadata?.name || email.split('@')[0];
-        const slug = slugify(name);
-        history.replaceState({}, '', `#/viajero/${slug}`);
-        enableNavLinks();
-        showUserMenu(name);
+      async function submitAuth(){
+        const email = ($('email').value||'').trim().toLowerCase();
+        const password = $('password').value;
+        const msg = $('authMsg');
+        msg.textContent = '';
+        if(!email || !password){ msg.textContent = 'Completa email y contraseña.'; return; }
+        try{
+          if(mode === 'register'){
+            const name = ($('name').value||'').trim();
+            if(!name){ msg.textContent = 'Añade tu nombre para registrarte.'; return; }
+            const { data, error } = await supabase.auth.signUp({ email, password, options:{ data:{ name } } });
+            if(error){ msg.textContent = 'Error: ' + error.message; return; }
+            if(data.session){
+              enableNavLinks(); showUserMenu(name);
+              msg.textContent = 'Registro correcto. ¡Bienvenido!';
+            } else { msg.textContent = 'Revisa tu correo para confirmar el registro.'; }
+          } else {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if(error){ msg.textContent = 'Credenciales inválidas'; return; }
+            const { data: u } = await supabase.auth.getUser();
+            const name = u?.user?.user_metadata?.name || email.split('@')[0];
+            enableNavLinks(); showUserMenu(name);
+            msg.textContent = 'Sesión iniciada.';
+          }
+        }catch(e){ msg.textContent = 'Error inesperado.'; }
       }
-
-      $('regBtn').addEventListener('click', register);
-      $('loginBtn').addEventListener('click', login);
+      $('authSubmit').addEventListener('click', submitAuth);
 
       // Si hay sesión, habilitar navegación al cargar; si no, mostrar aviso al pulsar
       (async () => {
