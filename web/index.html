@@ -339,7 +339,9 @@
 
       function swap(){
         const a = $('from').value; const b = $('to').value;
-        $('from').value = b; $('to').value = a; convert();
+        $('from').value = b; $('to').value = a;
+        updateCurrencySymbol();
+        convert();
       }
 
   async function init(){
