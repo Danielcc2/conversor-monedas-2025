@@ -68,6 +68,7 @@
       const SUPABASE_URL = 'https://ubqsbofiyhearumlmdif.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicXNib2ZpeWhlYXJ1bWxtZGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjczNzUsImV4cCI6MjA3MzEwMzM3NX0.CpXG7JL7sOb1Rdn0BMyqN9MxsV13UMpSwazuhQt8jlE';
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.sb = supabase; // Exponer cliente para depuración en consola
       const $ = (id) => document.getElementById(id);
       function slugify(name){ return String(name||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 
