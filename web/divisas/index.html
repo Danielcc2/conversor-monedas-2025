@@ -78,7 +78,23 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <header style="position:sticky;top:0;z-index:60;background:transparent;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:12px;align-items:center;font-family:'Sora',ui-sans-serif,system-ui;font-weight:800">
+        <div style="width:36px;height:36px;border-radius:10px;background:radial-gradient(circle at 35% 35%, #22d3ee, transparent 55%), linear-gradient(135deg,#10b981,#0ea5e9);display:grid;place-items:center;color:#052e2b">✈︎</div>
+        <div>Dael‑viajes</div>
+      </div>
+      <nav style="display:flex;gap:18px;align-items:center;font-weight:700">
+        <a href="/blog" style="color:#e5e7eb;text-decoration:none">Blog</a>
+        <a href="/destinos" style="color:#e5e7eb;text-decoration:none">Destinos</a>
+        <a href="/presupuestos" style="color:#e5e7eb;text-decoration:none">Presupuestos</a>
+        <a href="/consejos" style="color:#e5e7eb;text-decoration:none">Consejos</a>
+        <a href="/diario" style="color:#e5e7eb;text-decoration:none">Diario</a>
+      </nav>
+      <div class="user"><button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
+        <div id="userDropdown" class="dropdown"><div class="dd-header">Dael‑viajes</div><a href="/">Inicio</a><a href="#" id="menuLogout">Cerrar sesión</a></div>
+      </div>
+    </header>
+    <div class="container" style="margin-top:12px">
       <div class="topbar">
         <div class="user">
           <button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
@@ -356,6 +372,7 @@
         document.getElementById('menuPrefs')?.addEventListener('click', (e)=>{ e.preventDefault(); dd?.classList.remove('open'); document.getElementById('from')?.focus(); });
         document.getElementById('menuProfile')?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Perfil: próximamente.'); });
         document.getElementById('menuHistory')?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Historial: próximamente.'); });
+        document.getElementById('menuLogout')?.addEventListener('click', async (e)=>{ e.preventDefault(); await supabase.auth.signOut(); window.location.href = '/'; });
 
         // (Sin panel de categorías en esta vista)
       }
