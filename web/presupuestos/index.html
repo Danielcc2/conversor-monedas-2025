@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dael‑viajes · Presupuestos y divisas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&display=swap" rel="stylesheet">
+  <style>body{margin:0;background:#0b1220;color:#e5e7eb;font-family:'Sora',ui-sans-serif,system-ui}.wrap{max-width:900px;margin:40px auto;padding:0 20px}.card{background:#0f172a;border:1px solid #1f2937;padding:16px;border-radius:12px;margin-bottom:14px}a{color:#22d3ee}</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Presupuestos y divisas</h1>
+    <div class="card">Plantillas de presupuesto e integración con el conversor. (En construcción)</div>
+    <p><a href="/">Inicio</a> · <a href="/divisas">Conversor</a></p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>const sb=window.supabase.createClient('https://ubqsbofiyhearumlmdif.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicXNib2ZpeWhlYXJ1bWxtZGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjczNzUsImV4cCI6MjA3MzEwMzM3NX0.CpXG7JL7sOb1Rdn0BMyqN9MxsV13UMpSwazuhQt8jlE');(async()=>{const {data}=await sb.auth.getUser();if(!data?.user)location.href='/';})();</script>
+</body>
+</html>
+
