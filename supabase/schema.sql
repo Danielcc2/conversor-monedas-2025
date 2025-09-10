@@ -9,8 +9,12 @@ create table if not exists public.profiles (
 
 -- Trigger para crear perfil al registrarse
 create or replace function public.handle_new_user()
-returns trigger language plpgsql as $$
+returns trigger
+security definer
+set search_path = public
+language plpgsql as $$
 begin
+  -- Insertar perfil del usuario recién creado, ignorando RLS
   insert into public.profiles (id, name)
   values (new.id, coalesce(new.raw_user_meta_data->>'name', ''))
   on conflict (id) do nothing;
@@ -54,4 +58,3 @@ exception when duplicate_object then null; end $$;
 do $$ begin
   create policy prefs_update_own on public.preferences for update using (user_id = auth.uid());
 exception when duplicate_object then null; end $$;
-

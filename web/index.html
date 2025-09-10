@@ -80,7 +80,7 @@
         const { data, error } = await supabase.auth.signUp({
           email,
           password: pass,
-          options: { data: { name }, emailRedirectTo: 'https://www.blogviajes2025.site' }
+          options: { data: { name } }
         });
         if (error) { alert('Error al registrar: ' + error.message); return; }
         const slug = slugify(name);
