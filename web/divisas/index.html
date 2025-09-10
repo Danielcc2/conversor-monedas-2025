@@ -15,10 +15,10 @@
       }
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); margin: 0; }
       .container { position: relative; max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
-      .topbar { display:flex; justify-content:flex-end; align-items:center; margin-bottom: 8px; gap: 8px; }
+      .topbar { position: sticky; top: 0; display:flex; justify-content:flex-end; align-items:center; margin-bottom: 8px; gap: 8px; z-index: 50; }
       .user { position: relative; }
-      .user-btn { background:#0b1220; border:1px solid #1f2937; color:var(--text); padding:8px 12px; border-radius:999px; cursor:pointer; }
-      .dropdown { position:absolute; right:0; top:100%; margin-top:8px; background:#0b1220; border:1px solid #1f2937; border-radius:10px; min-width:200px; box-shadow:0 10px 24px rgba(0,0,0,.35); display:none; }
+      .user-btn { background:linear-gradient(135deg,#0b1220,#0e162b); border:1px solid #1f2937; color:var(--text); padding:8px 12px; border-radius:999px; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.25); }
+      .dropdown { position:absolute; right:0; top:calc(100% + 8px); background:#0b1220; border:1px solid #1f2937; border-radius:12px; min-width:220px; box-shadow:0 18px 40px rgba(0,0,0,.45); display:none; overflow:hidden; z-index: 1000; }
       .dropdown.open { display:block; }
       .dropdown .dd-header { padding:10px 12px; font-size:.85rem; color:var(--muted); border-bottom:1px solid #1f2937; }
       .dropdown a { display:block; padding:10px 12px; color:var(--text); text-decoration:none; }
@@ -41,7 +41,15 @@
       .warn { color: var(--danger); }
       footer { margin-top: 20px; font-size: .85rem; color: var(--muted); }
       .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .badge { position: absolute; top: 12px; right: 12px; font-size: 12px; color: #9ca3af; }
+      .badge { position: fixed; bottom: 12px; right: 12px; font-size: 12px; color: #9ca3af; background: rgba(17,24,39,.75); padding:6px 10px; border:1px solid #1f2937; border-radius: 999px; z-index: 60; }
+      /* Navegación lateral derecha */
+      .sidepanel { position: fixed; top: 96px; right: 12px; width: 240px; background:#0b1220; border:1px solid #1f2937; border-radius: 12px; box-shadow: 0 16px 36px rgba(0,0,0,.45); z-index: 40; }
+      .sidepanel h3 { margin: 10px 12px; font-size: 1rem; color: #cbd5e1; }
+      .sidepanel a { display:block; padding: 10px 12px; color: var(--text); text-decoration: none; }
+      .sidepanel a:hover { background:#111827; }
+      .sidepanel .hint { color: var(--muted); font-size: .85rem; padding: 0 12px 10px; }
+      .sidepanel-toggle { position: fixed; top: 96px; right: 12px; background: var(--primary); color:#052e2b; border:none; padding:8px 10px; border-radius:10px; cursor:pointer; z-index: 41; box-shadow:0 8px 20px rgba(0,0,0,.35); }
+      .sidepanel.hidden { display:none; }
       /* Estilo elegante para el input de monto */
       .input-wrap { position: relative; border-radius: 12px; padding: 1px; background: linear-gradient(135deg, #1f2937, #334155); }
       .input-wrap > input { border: none; background: #0b1220; border-radius: 11px; width: 100%; padding: 14px 14px 14px 56px; }
@@ -265,6 +273,34 @@
     return user;
   }
 
+  function buildRightPanel(){
+    const panel = document.createElement('div');
+    panel.className = 'sidepanel hidden';
+    panel.id = 'sidepanel';
+    panel.innerHTML = `
+      <h3>Explora</h3>
+      <a href="#" id="navBlog">Blog de viajes</a>
+      <a href="#" id="navDestinos">Destinos y guías</a>
+      <a href="#" id="navPresupuesto">Presupuestos y divisas</a>
+      <a href="#" id="navConsejos">Consejos y seguridad</a>
+      <a href="#" id="navDiario">Mi diario</a>
+      <div class="hint">Secciones en preparación · acceso solo con sesión</div>
+    `;
+    document.body.appendChild(panel);
+    const toggle = document.createElement('button');
+    toggle.className = 'sidepanel-toggle';
+    toggle.id = 'sidepanelToggle';
+    toggle.textContent = 'Secciones';
+    document.body.appendChild(toggle);
+    toggle.addEventListener('click', ()=>{
+      panel.classList.toggle('hidden');
+    });
+    ['navBlog','navDestinos','navPresupuesto','navConsejos','navDiario'].forEach(id=>{
+      const el = document.getElementById(id);
+      el?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Próximamente: sección protegida'); });
+    });
+  }
+
   async function loadPreferences(){
     const user = await getUser();
     if(!user) return; // invitado: no carga preferencias del servidor
@@ -353,6 +389,9 @@
         document.getElementById('menuPrefs')?.addEventListener('click', (e)=>{ e.preventDefault(); dd?.classList.remove('open'); document.getElementById('from')?.focus(); });
         document.getElementById('menuProfile')?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Perfil: próximamente.'); });
         document.getElementById('menuHistory')?.addEventListener('click', (e)=>{ e.preventDefault(); alert('Historial: próximamente.'); });
+
+        // Panel derecho de categorías
+        buildRightPanel();
       }
 
       init();
