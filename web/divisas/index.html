@@ -99,9 +99,28 @@
         </div>
       </div>
       <div id="dvMobile" class="dv-mobile" aria-hidden="true">
+        <style>
+          .dv-sheet{ background:#f3f4f6; color:#0b1220 }
+          .dv-head{ position:relative; padding:16px; text-align:center; border-bottom:1px solid #e5e7eb; background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(243,244,246,.9)) }
+          .dv-head img{ width:88px; height:88px }
+          .dv-close{ position:absolute; right:14px; top:14px; width:44px; height:44px; border-radius:50%; background:#fff; border:1px solid #cbd5e1; display:grid; place-items:center }
+          .dv-close span{ position:relative; width:20px; height:2px; background:#0b1220; transform:rotate(45deg) }
+          .dv-close span::after{ content:""; position:absolute; inset:0; transform:rotate(90deg); background:#0b1220 }
+          .dv-list a{ display:flex; align-items:center; justify-content:space-between; padding:18px 10px; border-bottom:1px solid #d1d5db; font-weight:700; letter-spacing:.3px; color:#0b1220; text-decoration:none }
+          .dv-chev{ width:18px; height:18px; border:2px solid #0b1220; border-left:0; border-top:0; transform:rotate(45deg); margin-left:8px }
+        </style>
         <div class="dv-sheet">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Menú</strong><button id="dvClose" class="dv-close">Cerrar</button></div>
-          <a href="/blog">Blog</a><a href="/destinos">Destinos</a><a href="/presupuestos">Presupuestos</a><a href="/consejos">Consejos</a><a href="/diario">Diario</a>
+          <div class="dv-head"><img src="/assets/Dael-viajes.png" alt="Dael‑viajes"><button id="dvClose" class="dv-close"><span></span></button></div>
+          <div class="dv-list">
+            <a href="/blog">ESPAÑA <i class="dv-chev"></i></a>
+            <a href="/destinos">EUROPA <i class="dv-chev"></i></a>
+            <a href="/destinos">EEUU <i class="dv-chev"></i></a>
+            <a href="/destinos">ASIA <i class="dv-chev"></i></a>
+            <a href="/destinos">ÁFRICA <i class="dv-chev"></i></a>
+            <a href="/destinos">GUÍAS DE VIAJE</a>
+            <a href="/presupuestos">DESCUENTOS</a>
+            <a href="/presupuestos">PLANIFICA TU VIAJE</a>
+          </div>
         </div>
       </div>
       <script>

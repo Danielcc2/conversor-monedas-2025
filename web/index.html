@@ -23,11 +23,19 @@
       .hamburger span { display:block; width:18px; height:2px; background:#e5e7eb; position:relative }
       .hamburger span::before, .hamburger span::after { content:""; position:absolute; left:0; width:18px; height:2px; background:#e5e7eb }
       .hamburger span::before { top:-6px } .hamburger span::after { top:6px }
-      .mobile-menu { position:fixed; inset:0; background:rgba(2,6,23,.7); backdrop-filter:blur(6px); display:none; z-index:70 }
+      .mobile-menu { position:fixed; inset:0; background:rgba(2,6,23,.7); backdrop-filter:blur(8px); display:none; z-index:70 }
       .mobile-menu.open { display:block }
-      .mobile-sheet { position:absolute; top:0; right:0; width:78%; max-width:340px; height:100%; background:#0b1220; border-left:1px solid #1f2937; padding:16px }
-      .mobile-sheet a { display:block; padding:12px 8px; color:#e5e7eb; text-decoration:none; font-weight:700 }
-      .mobile-close { background:transparent; border:1px solid #1f2937; color:#e5e7eb; padding:8px 10px; border-radius:10px; }
+      .mobile-sheet { position:absolute; top:0; right:0; width:86%; max-width:420px; height:100%; background:#f3f4f6; color:#0b1220; border-left:1px solid #e5e7eb; padding:0; overflow:auto }
+      .m-head { position:relative; padding:16px; text-align:center; border-bottom:1px solid #e5e7eb; background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(243,244,246,.9)) }
+      .m-head img { width:88px; height:88px }
+      .m-close { position:absolute; right:14px; top:14px; width:44px; height:44px; border-radius:50%; background:#ffffff; border:1px solid #cbd5e1; display:grid; place-items:center; cursor:pointer }
+      .m-close span { position:relative; width:20px; height:2px; background:#0b1220; transform:rotate(45deg) }
+      .m-close span::after { content:""; position:absolute; inset:0; transform:rotate(90deg); background:#0b1220 }
+      .m-list { padding:10px 12px }
+      .m-item { display:flex; align-items:center; justify-content:space-between; padding:18px 10px; border-bottom:1px solid #d1d5db; font-weight:700; letter-spacing:.3px }
+      .m-item .chev { width:18px; height:18px; border:2px solid #0b1220; border-left:0; border-top:0; transform:rotate(45deg); margin-left:8px }
+      .m-social { display:flex; gap:26px; align-items:center; padding:16px 10px }
+      .m-social svg { width:24px; height:24px; stroke:#0b1220 }
       .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: stretch; }
       .nav { display:flex; gap: 24px; align-items:center; font-weight:700; font-family: 'Sora', ui-sans-serif, system-ui; }
       .nav a { color: #e5e7eb; text-decoration:none; font-size: 1rem; }
@@ -92,17 +100,25 @@
 
       <div id="mobileMenu" class="mobile-menu" aria-hidden="true">
         <div class="mobile-sheet">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <strong>Menú</strong>
-            <button id="mobileClose" class="mobile-close">Cerrar</button>
+          <div class="m-head">
+            <img src="/assets/Dael-viajes.png" alt="Dael‑viajes">
+            <button id="mobileClose" class="m-close" aria-label="Cerrar menú"><span></span></button>
           </div>
-          <a href="/blog">Blog</a>
-          <a href="/destinos">Destinos</a>
-          <a href="/presupuestos">Presupuestos</a>
-          <a href="/consejos">Consejos</a>
-          <a href="/diario">Diario</a>
-          <hr style="border:0;border-top:1px solid #1f2937;margin:10px 0">
-          <a href="/divisas">Conversor</a>
+          <div class="m-list">
+            <a class="m-item" href="/blog">ESPAÑA <i class="chev"></i></a>
+            <a class="m-item" href="/destinos">EUROPA <i class="chev"></i></a>
+            <a class="m-item" href="/destinos">EEUU <i class="chev"></i></a>
+            <a class="m-item" href="/destinos">ASIA <i class="chev"></i></a>
+            <a class="m-item" href="/destinos">ÁFRICA <i class="chev"></i></a>
+            <a class="m-item" href="/destinos">GUÍAS DE VIAJE</a>
+            <a class="m-item" href="/presupuestos">DESCUENTOS</a>
+            <a class="m-item" href="/presupuestos">PLANIFICA TU VIAJE</a>
+            <div class="m-social">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke-width="2"/></svg>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 8l8 6 8-6v10H4z" stroke-width="2"/></svg>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" stroke-width="2"/></svg>
+            </div>
+          </div>
         </div>
       </div>
 
