@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conversor de Monedas</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #111827;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --primary: #10b981;
+        --danger: #ef4444;
+      }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); margin: 0; }
+      .container { max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+      h1 { margin: 0 0 12px; font-size: 1.6rem; }
+      p.sub { margin: 0 0 20px; color: var(--muted); }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+      label { font-size: .9rem; color: var(--muted); display: block; margin-bottom: 6px; }
+      input, select, button { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #1f2937; background: #0b1220; color: var(--text); }
+      input:focus, select:focus, button:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
+      button { transition: transform .04s ease, filter .15s ease; }
+      button.primary { background: var(--primary); color: #052e2b; border: none; font-weight: 600; cursor: pointer; }
+      button.primary:disabled { opacity: .6; cursor: not-allowed; }
+      button:hover { filter: brightness(1.08); }
+      button:active { transform: translateY(1px); }
+      .actions { display: flex; gap: 12px; margin-top: 16px; }
+      .muted { color: var(--muted); font-size: .9rem; }
+      .result { margin-top: 16px; font-size: 1.2rem; font-weight: 600; }
+      .warn { color: var(--danger); }
+      footer { margin-top: 20px; font-size: .85rem; color: var(--muted); }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      /* Estilo elegante para el input de monto */
+      .input-wrap { position: relative; border-radius: 12px; padding: 1px; background: linear-gradient(135deg, #1f2937, #334155); }
+      .input-wrap > input { border: none; background: #0b1220; border-radius: 11px; width: 100%; padding: 14px 14px 14px 44px; }
+      .input-wrap > input::placeholder { color: #6b7280; }
+      .input-wrap.amount::before { content: ""; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; opacity: .9;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23a3e635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>');
+        background-size: 20px 20px; background-repeat: no-repeat; }
+      /* Quitar spinners en algunos navegadores para un look más limpio */
+      input[type=number]::-webkit-outer-spin-button,
+      input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+      input[type=number] { -moz-appearance: textfield; }
+      /* Select estilizado */
+      .select { position: relative; }
+      .select select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: #0b1220;
+        padding-right: 42px; /* espacio para el ícono */
+        border-radius: 10px;
+      }
+      .select::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        right: 12px;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+        opacity: .85;
+      }
+      @media (max-width: 640px) { .row, .row3, .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Conversor de Monedas</h1>
+      <p class="sub">Usa tasas en vivo con límite de 2 actualizaciones por día (caché local).</p>
+
+      <div class="row3">
+        <div>
+          <label for="amount">Monto</label>
+          <div class="input-wrap amount">
+            <input id="amount" type="number" step="0.01" min="0" placeholder="0.00" value="100" />
+          </div>
+        </div>
+        <div>
+          <label for="from">Desde</label>
+          <div class="select">
+            <select id="from">
+              <option value="USD" selected>USD</option>
+              <option value="EUR">EUR</option>
+              <option value="MXN">MXN</option>
+              <option value="ARS">ARS</option>
+              <option value="COP">COP</option>
+              <option value="CLP">CLP</option>
+              <option value="PEN">PEN</option>
+              <option value="GBP">GBP</option>
+              <option value="JPY">JPY</option>
+              <option value="BRL">BRL</option>
+              <option value="CAD">CAD</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="to">Hacia</label>
+          <div class="select">
+            <select id="to">
+              <option value="USD">USD</option>
+              <option value="EUR" selected>EUR</option>
+              <option value="MXN">MXN</option>
+              <option value="ARS">ARS</option>
+              <option value="COP">COP</option>
+              <option value="CLP">CLP</option>
+              <option value="PEN">PEN</option>
+              <option value="GBP">GBP</option>
+              <option value="JPY">JPY</option>
+              <option value="BRL">BRL</option>
+              <option value="CAD">CAD</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="convert" class="primary">Convertir</button>
+        <button id="swap">Intercambiar</button>
+        <button id="update">Actualizar tasas desde Internet</button>
+      </div>
+
+      <div class="result" id="output">—</div>
+      <div class="muted" id="meta"></div>
+      <div class="muted" id="limit"></div>
+
+      <footer>
+        Base: 1 USD equivale a X unidades de moneda. API: exchangerate.host
+      </footer>
+    </div>
+
+    <script>
+      const SUPPORTED = [
+        "USD","EUR","MXN","ARS","COP","CLP","PEN","GBP","JPY","BRL","CAD"
+      ];
+      const DEFAULTS = {
+        USD: 1,
+        EUR: 0.92,
+        MXN: 19.8,
+        ARS: 980,
+        COP: 3940,
+        CLP: 910,
+        PEN: 3.75,
+        GBP: 0.78,
+        JPY: 146.5,
+        BRL: 5.1,
+        CAD: 1.36,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const todayStr = () => new Date().toISOString().slice(0,10);
+      const CACHE_KEY = 'ratesCacheV1';
+
+      function loadCache(){
+        try {
+          const raw = localStorage.getItem(CACHE_KEY);
+          if(!raw) return null;
+          return JSON.parse(raw);
+        } catch { return null; }
+      }
+
+      function saveCache(obj){
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch {}
+      }
+
+      function getRatesFromCache(){
+        const cache = loadCache();
+        if(cache && cache.rates){ return cache; }
+        return null;
+      }
+
+      function currentRates(){
+        const c = getRatesFromCache();
+        if(!c) return {...DEFAULTS};
+        const out = {...DEFAULTS};
+        for(const k of Object.keys(c.rates)){
+          if(SUPPORTED.includes(k)) out[k] = Number(c.rates[k]);
+        }
+        return out;
+      }
+
+      async function fetchRates(){
+        const url = 'https://api.exchangerate.host/latest?base=USD';
+        const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if(!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        if(!data || !data.rates) throw new Error('Respuesta inválida');
+        const out = { USD: 1 };
+        for(const k of SUPPORTED){
+          if(typeof data.rates[k] === 'number') out[k] = data.rates[k];
+        }
+        return out;
+      }
+
+      function remainingUpdates(){
+        const c = loadCache();
+        if(!c || c.day !== todayStr()) return 2;
+        const used = Number(c.fetch_count || 0);
+        return Math.max(0, 2 - used);
+      }
+
+      async function updateFromAPI(auto=false){
+        const remain = remainingUpdates();
+        if(remain <= 0){
+          if(auto) setLimitText();
+          else alert('Límite diario alcanzado (2 actualizaciones).');
+          return false;
+        }
+        try {
+          $('update').disabled = true;
+          const rates = await fetchRates();
+          const c = loadCache() || {};
+          const day = todayStr();
+          const count = (c.day === day ? Number(c.fetch_count||0) : 0) + 1;
+          const cacheData = {
+            last_updated: new Date().toISOString(),
+            day,
+            fetch_count: count,
+            rates,
+          };
+          saveCache(cacheData);
+          setMeta(cacheData);
+          setLimitText();
+          $('update').disabled = false;
+          return true;
+        } catch (e){
+          console.error(e);
+          $('update').disabled = false;
+          if(!auto) alert('No se pudo actualizar desde la API.');
+          return false;
+        }
+      }
+
+      function setMeta(cache){
+        const c = cache || loadCache();
+        if(c && c.last_updated){
+          $('meta').textContent = `Última actualización API: ${c.last_updated}`;
+        } else {
+          $('meta').textContent = 'Usando tasas por defecto/caché.';
+        }
+      }
+
+      function setLimitText(){
+        const remain = remainingUpdates();
+        $('limit').textContent = `Actualizaciones restantes hoy: ${remain}`;
+        $('limit').className = 'muted' + (remain === 0 ? ' warn' : '');
+      }
+
+      function convert(){
+        const amount = Number(($('amount').value || '').replace(',', '.'));
+        if(!(amount >= 0)) { $('output').textContent = 'Monto inválido'; return; }
+        const from = $('from').value;
+        const to = $('to').value;
+        if(!SUPPORTED.includes(from) || !SUPPORTED.includes(to)) return;
+        const rates = currentRates();
+        const usd = amount / Number(rates[from]);
+        const res = usd * Number(rates[to]);
+        $('output').textContent = `${amount.toFixed(2)} ${from} = ${res.toFixed(2)} ${to}`;
+      }
+
+      function swap(){
+        const a = $('from').value; const b = $('to').value;
+        $('from').value = b; $('to').value = a; convert();
+      }
+
+      async function init(){
+        setMeta();
+        setLimitText();
+        // Auto-actualización si quedan cupos
+        if(remainingUpdates() > 0){
+          updateFromAPI(true).finally(convert);
+        } else {
+          convert();
+        }
+        $('convert').addEventListener('click', convert);
+        $('swap').addEventListener('click', swap);
+        $('update').addEventListener('click', () => updateFromAPI(false).then(convert));
+        $('amount').addEventListener('input', convert);
+        $('from').addEventListener('change', convert);
+        $('to').addEventListener('change', convert);
+      }
+
+      init();
+    </script>
+  </body>
+  </html>
