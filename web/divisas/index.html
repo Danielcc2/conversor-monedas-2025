@@ -92,11 +92,9 @@
         .dv-close{ background:transparent;border:1px solid #1f2937;color:#e5e7eb;padding:8px 10px;border-radius:10px }
       </style>
       <div style="display:grid;grid-template-columns:40px auto 40px;align-items:center;gap:18px">
-        <button id="dvBurger" class="dv-burger" aria-label="Abrir menú"><span></span></button>
+        <div aria-hidden="true" style="width:40px;height:40px"></div>
         <a href="/" style="justify-self:center"><img src="/assets/Dael-viajes.png" alt="Dael‑viajes" style="width:64px;height:64px"></a>
-        <div class="user" style="justify-self:end"><button id="userBtn" class="user-btn"><span id="userName">—</span> ▾</button>
-          <div id="userDropdown" class="dropdown"><div class="dd-header">Dael‑viajes</div><a href="/">Inicio</a><a href="#" id="menuLogout">Cerrar sesión</a></div>
-        </div>
+        <button id="dvBurger" class="dv-burger" aria-label="Abrir menú" style="justify-self:end"><span></span></button>
       </div>
       <div id="dvMobile" class="dv-mobile" aria-hidden="true">
         <style>

@@ -19,6 +19,7 @@
       .mainnav a { color:#e5e7eb; text-decoration:none; font-weight:700; font-family:'Sora',ui-sans-serif,system-ui; font-size:1.12rem }
       .mainnav a.locked { opacity:.5; cursor:not-allowed }
       .nav-logo img{ width:64px; height:64px }
+      .spacer{ display:none; width:40px; height:40px }
       .hamburger { display:none; width:40px; height:40px; border:1px solid #1f2937; background:#0b1220; border-radius:10px; align-items:center; justify-content:center; cursor:pointer }
       .hamburger span { display:block; width:18px; height:2px; background:#e5e7eb; position:relative; transition:.2s transform ease, .2s background ease }
       .hamburger span::before, .hamburger span::after { content:""; position:absolute; left:0; width:18px; height:2px; background:#e5e7eb; transition:.2s transform ease, .2s top ease }
@@ -68,6 +69,7 @@
         .mainnav { grid-template-columns: 40px auto 40px }
         .nav-left,.nav-right { display:none }
         .hamburger { display:flex }
+        .spacer{ display:block }
         .mainnav a { font-size:1rem }
       }
     </style>
@@ -76,6 +78,7 @@
     <div class="wrap">
       <header>
         <div class="mainnav">
+          <div class="spacer" aria-hidden="true"></div>
           <div class="nav-left">
             <a href="#" data-route="/blog" class="locked">Blog</a>
             <a href="#" data-route="/destinos" class="locked">Destinos</a>
