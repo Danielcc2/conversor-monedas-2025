@@ -63,38 +63,45 @@
       </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      const DB_KEY = 'bv2025_db';
+      const SUPABASE_URL = 'https://ubqsbofiyhearumlmdif.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicXNib2ZpeWhlYXJ1bWxtZGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjczNzUsImV4cCI6MjA3MzEwMzM3NX0.CpXG7JL7sOb1Rdn0BMyqN9MxsV13UMpSwazuhQt8jlE';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const $ = (id) => document.getElementById(id);
-      function loadDB(){ try { return JSON.parse(localStorage.getItem(DB_KEY)) || { users: [], sessions: [] }; } catch { return { users: [], sessions: [] }; } }
-      function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
       function slugify(name){ return String(name||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 
-      function register(){
+      async function register(){
         const name = $('regName').value.trim();
         const email = $('regEmail').value.trim().toLowerCase();
         const pass = $('regPass').value;
         if(!name || !email || !pass){ alert('Completa todos los campos'); return; }
-        const db = loadDB();
-        if (db.users.some(u => u.email === email)) { alert('Ese email ya está registrado'); return; }
-        const user = { id: crypto.randomUUID(), name, email, pass, slug: slugify(name), createdAt: new Date().toISOString() };
-        db.users.push(user);
-        db.sessions = [{ userId: user.id, at: new Date().toISOString() }];
-        saveDB(db);
-        history.replaceState({}, '', `#/viajero/${user.slug}`);
-        location.href = '/divisas?user=' + encodeURIComponent(user.slug);
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password: pass,
+          options: { data: { name }, emailRedirectTo: 'https://www.blogviajes2025.site' }
+        });
+        if (error) { alert('Error al registrar: ' + error.message); return; }
+        const slug = slugify(name);
+        if (data.session) {
+          history.replaceState({}, '', `#/viajero/${slug}`);
+          location.href = '/divisas?user=' + encodeURIComponent(slug);
+        } else {
+          alert('Revisa tu correo para confirmar el registro.');
+        }
       }
 
-      function login(){
+      async function login(){
         const email = $('loginEmail').value.trim().toLowerCase();
-        const pass = $('loginPass').value;
-        const db = loadDB();
-        const user = db.users.find(u => u.email === email && u.pass === pass);
-        if(!user){ alert('Credenciales inválidas'); return; }
-        db.sessions = [{ userId: user.id, at: new Date().toISOString() }];
-        saveDB(db);
-        history.replaceState({}, '', `#/viajero/${user.slug}`);
-        location.href = '/divisas?user=' + encodeURIComponent(user.slug);
+        const password = $('loginPass').value;
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { alert('Credenciales inválidas'); return; }
+        // Intentar obtener nombre del perfil si existe
+        const { data: userData } = await supabase.auth.getUser();
+        const name = userData?.user?.user_metadata?.name || email.split('@')[0];
+        const slug = slugify(name);
+        history.replaceState({}, '', `#/viajero/${slug}`);
+        location.href = '/divisas?user=' + encodeURIComponent(slug);
       }
 
       $('regBtn').addEventListener('click', register);

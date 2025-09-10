@@ -127,7 +127,11 @@
       <div class="result" id="output">—</div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+      const SUPABASE_URL = 'https://ubqsbofiyhearumlmdif.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicXNib2ZpeWhlYXJ1bWxtZGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjczNzUsImV4cCI6MjA3MzEwMzM3NX0.CpXG7JL7sOb1Rdn0BMyqN9MxsV13UMpSwazuhQt8jlE';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const SUPPORTED = [
         "USD","EUR","MXN","ARS","COP","CLP","PEN","GBP","JPY","BRL","CAD"
       ];
@@ -218,6 +222,42 @@
     }
   }
 
+  async function getUser(){
+    const { data } = await supabase.auth.getUser();
+    return data?.user || null;
+  }
+
+  async function loadPreferences(){
+    const user = await getUser();
+    if(!user) return; // invitado: no carga preferencias del servidor
+    try {
+      const { data, error } = await supabase
+        .from('preferences')
+        .select('default_from, default_to')
+        .eq('user_id', user.id)
+        .single();
+      if (!error && data){
+        if (SUPPORTED.includes(data.default_from)) $('from').value = data.default_from;
+        if (SUPPORTED.includes(data.default_to)) $('to').value = data.default_to;
+        updateCurrencySymbol();
+      }
+    } catch(e){ /* noop */ }
+  }
+
+  async function savePreferences(){
+    const user = await getUser();
+    if(!user) return; // invitado: no guarda
+    const payload = {
+      user_id: user.id,
+      default_from: $('from').value,
+      default_to: $('to').value,
+      updated_at: new Date().toISOString()
+    };
+    try {
+      await supabase.from('preferences').upsert(payload, { onConflict: 'user_id' });
+    } catch(e){ /* noop */ }
+  }
+
       function updateCurrencySymbol(){
         const from = $('from').value;
         $('currencySymbol').textContent = SYMBOLS[from] || '';
@@ -240,16 +280,18 @@
         $('from').value = b; $('to').value = a;
         updateCurrencySymbol();
         convert();
+        savePreferences();
       }
 
       async function init(){
         await fetchServerRates();
+        await loadPreferences();
         convert();
         $('convert').addEventListener('click', convert);
         $('swap').addEventListener('click', swap);
         $('amount').addEventListener('input', convert);
-        $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); });
-        $('to').addEventListener('change', convert);
+        $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); savePreferences(); });
+        $('to').addEventListener('change', () => { convert(); savePreferences(); });
         updateCurrencySymbol();
       }
 
