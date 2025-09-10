@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Conversor de Monedas</title>
+    <title>Conversor de Divisas</title>
     <style>
       :root {
         --bg: #0f172a;
@@ -14,11 +14,11 @@
         --danger: #ef4444;
       }
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); margin: 0; }
-      .container { max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+      .container { position: relative; max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
       h1 { margin: 0 0 12px; font-size: 1.6rem; }
       p.sub { margin: 0 0 20px; color: var(--muted); }
       .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+      .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
       label { font-size: .9rem; color: var(--muted); display: block; margin-bottom: 6px; }
       input, select, button { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #1f2937; background: #0b1220; color: var(--text); }
       input:focus, select:focus, button:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
@@ -33,13 +33,12 @@
       .warn { color: var(--danger); }
       footer { margin-top: 20px; font-size: .85rem; color: var(--muted); }
       .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .badge { position: absolute; top: 12px; right: 12px; font-size: 12px; color: #9ca3af; }
       /* Estilo elegante para el input de monto */
       .input-wrap { position: relative; border-radius: 12px; padding: 1px; background: linear-gradient(135deg, #1f2937, #334155); }
-      .input-wrap > input { border: none; background: #0b1220; border-radius: 11px; width: 100%; padding: 14px 14px 14px 44px; }
+      .input-wrap > input { border: none; background: #0b1220; border-radius: 11px; width: 100%; padding: 14px 14px 14px 56px; }
       .input-wrap > input::placeholder { color: #6b7280; }
-      .input-wrap.amount::before { content: ""; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; opacity: .9;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23a3e635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>');
-        background-size: 20px 20px; background-repeat: no-repeat; }
+      .input-wrap .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); min-width: 30px; text-align: center; color: #a3e635; font-weight: 700; letter-spacing: .5px; }
       /* Quitar spinners en algunos navegadores para un look más limpio */
       input[type=number]::-webkit-outer-spin-button,
       input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -71,13 +70,15 @@
   </head>
   <body>
     <div class="container">
-      <h1>Conversor de Monedas</h1>
+      <h1>Conversor de Divisas</h1>
+      <div id="updatedBadge" class="badge" style="display:none">divisas actualizadas</div>
       <p class="sub">Usa tasas en vivo con límite de 2 actualizaciones por día (caché local).</p>
 
       <div class="row3">
         <div>
           <label for="amount">Monto</label>
           <div class="input-wrap amount">
+            <span class="prefix" id="currencySymbol">$</span>
             <input id="amount" type="number" step="0.01" min="0" placeholder="0.00" value="100" />
           </div>
         </div>
@@ -122,7 +123,7 @@
       <div class="actions">
         <button id="convert" class="primary">Convertir</button>
         <button id="swap">Intercambiar</button>
-        <button id="update">Actualizar tasas desde Internet</button>
+        
       </div>
 
       <div class="result" id="output">—</div>
@@ -138,6 +139,7 @@
       const SUPPORTED = [
         "USD","EUR","MXN","ARS","COP","CLP","PEN","GBP","JPY","BRL","CAD"
       ];
+      const SYMBOLS = { USD: '$', EUR: '€', MXN: '$', ARS: '$', COP: '$', CLP: '$', PEN: 'S/', GBP: '£', JPY: '¥', BRL: 'R$', CAD: '$' };
       const DEFAULTS = {
         USD: 1,
         EUR: 0.92,
@@ -154,7 +156,8 @@
 
       const $ = (id) => document.getElementById(id);
       const todayStr = () => new Date().toISOString().slice(0,10);
-      const CACHE_KEY = 'ratesCacheV1';
+  const CACHE_KEY = 'ratesCacheV1';
+  let IN_MEMORY_RATES = null;
 
       function loadCache(){
         try {
@@ -174,17 +177,18 @@
         return null;
       }
 
-      function currentRates(){
-        const c = getRatesFromCache();
-        if(!c) return {...DEFAULTS};
-        const out = {...DEFAULTS};
-        for(const k of Object.keys(c.rates)){
-          if(SUPPORTED.includes(k)) out[k] = Number(c.rates[k]);
-        }
-        return out;
-      }
+  function currentRates(){
+    if (IN_MEMORY_RATES) return { ...IN_MEMORY_RATES };
+    const c = getRatesFromCache();
+    if(!c) return {...DEFAULTS};
+    const out = {...DEFAULTS};
+    for(const k of Object.keys(c.rates)){
+      if(SUPPORTED.includes(k)) out[k] = Number(c.rates[k]);
+    }
+    return out;
+  }
 
-      async function fetchRates(){
+  async function fetchRates(){
         const url = 'https://api.exchangerate.host/latest?base=USD';
         const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
         if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -194,8 +198,30 @@
         for(const k of SUPPORTED){
           if(typeof data.rates[k] === 'number') out[k] = data.rates[k];
         }
-        return out;
+    return out;
+  }
+
+  async function fetchServerRates(){
+    try {
+      const resp = await fetch('rates.json?v=' + Date.now(), { cache: 'no-store' });
+      if(!resp.ok) return null;
+      const data = await resp.json();
+      if(!data || !data.rates) return null;
+      const out = { ...DEFAULTS };
+      for(const k of SUPPORTED){
+        if(typeof data.rates[k] === 'number') out[k] = data.rates[k];
       }
+      IN_MEMORY_RATES = out;
+      saveCache({ last_updated: data.last_updated, day: todayStr(), fetch_count: 2, rates: out });
+      setMeta({ last_updated: data.last_updated });
+      const badge = document.getElementById('updatedBadge');
+      if (badge) badge.style.display = 'block';
+      return out;
+    } catch (e) {
+      console.warn('No server rates.json yet', e);
+      return null;
+    }
+  }
 
       function remainingUpdates(){
         const c = loadCache();
@@ -212,7 +238,6 @@
           return false;
         }
         try {
-          $('update').disabled = true;
           const rates = await fetchRates();
           const c = loadCache() || {};
           const day = todayStr();
@@ -226,14 +251,37 @@
           saveCache(cacheData);
           setMeta(cacheData);
           setLimitText();
-          $('update').disabled = false;
           return true;
         } catch (e){
           console.error(e);
-          $('update').disabled = false;
           if(!auto) alert('No se pudo actualizar desde la API.');
           return false;
         }
+      }
+
+      function updateCurrencySymbol(){
+        const from = $('from').value;
+        $('currencySymbol').textContent = SYMBOLS[from] || '';
+      }
+
+      function msUntilNext(hour){
+        const now = new Date();
+        const target = new Date(now);
+        target.setHours(hour, 0, 0, 0);
+        if (target <= now) target.setDate(target.getDate() + 1);
+        return target - now;
+      }
+
+      function scheduleDailyUpdates(){
+        const schedule = (hour) => {
+          const delay = msUntilNext(hour);
+          setTimeout(function run(){
+            updateFromAPI(true).then(convert);
+            setTimeout(run, 24*60*60*1000);
+          }, delay);
+        };
+        schedule(0);  // 12am
+        schedule(12); // 12pm
       }
 
       function setMeta(cache){
@@ -245,11 +293,10 @@
         }
       }
 
-      function setLimitText(){
-        const remain = remainingUpdates();
-        $('limit').textContent = `Actualizaciones restantes hoy: ${remain}`;
-        $('limit').className = 'muted' + (remain === 0 ? ' warn' : '');
-      }
+  function setLimitText(){
+    $('limit').textContent = 'Actualización automática del servidor: 12am y 12pm (España)';
+    $('limit').className = 'muted';
+  }
 
       function convert(){
         const amount = Number(($('amount').value || '').replace(',', '.'));
@@ -268,22 +315,18 @@
         $('from').value = b; $('to').value = a; convert();
       }
 
-      async function init(){
-        setMeta();
-        setLimitText();
-        // Auto-actualización si quedan cupos
-        if(remainingUpdates() > 0){
-          updateFromAPI(true).finally(convert);
-        } else {
-          convert();
-        }
-        $('convert').addEventListener('click', convert);
-        $('swap').addEventListener('click', swap);
-        $('update').addEventListener('click', () => updateFromAPI(false).then(convert));
-        $('amount').addEventListener('input', convert);
-        $('from').addEventListener('change', convert);
-        $('to').addEventListener('change', convert);
-      }
+  async function init(){
+    setMeta();
+    setLimitText();
+    await fetchServerRates();
+    convert();
+    $('convert').addEventListener('click', convert);
+    $('swap').addEventListener('click', swap);
+    $('amount').addEventListener('input', convert);
+    $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); });
+    $('to').addEventListener('change', convert);
+    updateCurrencySymbol();
+  }
 
       init();
     </script>

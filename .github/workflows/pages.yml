@@ -6,6 +6,9 @@ on:
     paths:
       - 'web/**'
       - '.github/workflows/pages.yml'
+  schedule:
+    # Ejecuta cada hora; el job decidirá si desplegar solo a las 00:00 y 12:00 (Europa/Madrid)
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -20,17 +23,66 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      should: ${{ steps.gate.outputs.should }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Upload artifact
+      - name: Decide si corresponde desplegar (horario Europa/Madrid)
+        id: gate
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          from zoneinfo import ZoneInfo
+          import datetime, os
+          # Para eventos 'schedule', solo a las 00:00 y 12:00 hora de Madrid
+          is_schedule = os.environ.get('GITHUB_EVENT_NAME') == 'schedule'
+          now = datetime.datetime.now(ZoneInfo('Europe/Madrid'))
+          should = (not is_schedule) or (now.minute == 0 and now.hour in (0,12))
+          print(f"should={'true' if should else 'false'}")
+          PY
+
+      - name: Preparar sitio con tasas (incluye rates.json)
+        if: steps.gate.outputs.should == 'true'
+        run: |
+          set -e
+          mkdir -p dist
+          cp -R web/. dist/
+          python3 - <<'PY'
+          import json, urllib.request, datetime, sys
+          SUPPORTED = ["USD","EUR","MXN","ARS","COP","CLP","PEN","GBP","JPY","BRL","CAD"]
+          url = 'https://api.exchangerate.host/latest?base=USD'
+          try:
+              with urllib.request.urlopen(url, timeout=20) as r:
+                  data = json.loads(r.read().decode('utf-8'))
+          except Exception as e:
+              print('warn: no se pudo obtener tasas:', e, file=sys.stderr)
+              sys.exit(0)
+          rates = {"USD": 1}
+          for k in SUPPORTED:
+              v = data.get('rates', {}).get(k)
+              if isinstance(v, (int, float)):
+                  rates[k] = float(v)
+          out = {
+              'last_updated': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'timezone': 'Europe/Madrid',
+              'source': 'exchangerate.host',
+              'rates': rates,
+          }
+          with open('dist/rates.json','w', encoding='utf-8') as f:
+              json.dump(out, f)
+          print('rates.json generado')
+          PY
+
+      - name: Subir artifact a Pages
+        if: steps.gate.outputs.should == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: web
+          path: dist
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    if: needs.build.outputs.should == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -38,4 +90,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
