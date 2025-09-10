@@ -3,358 +3,102 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Conversor de Divisas</title>
+    <title>Viaja y Convierte Divisas</title>
     <style>
-      :root {
-        --bg: #0f172a;
-        --panel: #111827;
-        --text: #e5e7eb;
-        --muted: #9ca3af;
-        --primary: #10b981;
-        --danger: #ef4444;
-      }
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); margin: 0; }
-      .container { position: relative; max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
-      h1 { margin: 0 0 12px; font-size: 1.6rem; }
-      p.sub { margin: 0 0 20px; color: var(--muted); }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-      label { font-size: .9rem; color: var(--muted); display: block; margin-bottom: 6px; }
-      input, select, button { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #1f2937; background: #0b1220; color: var(--text); }
-      input:focus, select:focus, button:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
-      button { transition: transform .04s ease, filter .15s ease; }
-      button.primary { background: var(--primary); color: #052e2b; border: none; font-weight: 600; cursor: pointer; }
-      button.primary:disabled { opacity: .6; cursor: not-allowed; }
-      button:hover { filter: brightness(1.08); }
-      button:active { transform: translateY(1px); }
-      .actions { display: flex; gap: 12px; margin-top: 16px; }
-      .muted { color: var(--muted); font-size: .9rem; }
-      .result { margin-top: 16px; font-size: 1.2rem; font-weight: 600; text-align: center; }
-      .warn { color: var(--danger); }
-      footer { margin-top: 20px; font-size: .85rem; color: var(--muted); }
-      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .badge { position: absolute; top: 12px; right: 12px; font-size: 12px; color: #9ca3af; }
-      /* Estilo elegante para el input de monto */
-      .input-wrap { position: relative; border-radius: 12px; padding: 1px; background: linear-gradient(135deg, #1f2937, #334155); }
-      .input-wrap > input { border: none; background: #0b1220; border-radius: 11px; width: 100%; padding: 14px 14px 14px 56px; }
-      .input-wrap > input::placeholder { color: #6b7280; }
-      .input-wrap .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); min-width: 30px; text-align: center; color: #a3e635; font-weight: 700; letter-spacing: .5px; }
-      /* Quitar spinners en algunos navegadores para un look más limpio */
-      input[type=number]::-webkit-outer-spin-button,
-      input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-      input[type=number] { -moz-appearance: textfield; }
-      /* Select estilizado */
-      .select { position: relative; }
-      .select select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background: #0b1220;
-        padding-right: 42px; /* espacio para el ícono */
-        border-radius: 10px;
-      }
-      .select::after {
-        content: "";
-        position: absolute;
-        pointer-events: none;
-        right: 12px;
-        top: 50%;
-        width: 18px;
-        height: 18px;
-        transform: translateY(-50%);
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
-        opacity: .85;
-      }
-      @media (max-width: 640px) { .row, .row3, .grid { grid-template-columns: 1fr; } }
+      :root { --bg: #0b1220; --panel: #0f172a; --text: #e5e7eb; --muted: #9ca3af; --primary: #10b981; --accent: #22d3ee; }
+      * { box-sizing: border-box; }
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; background: radial-gradient(1200px 600px at 20% 10%, rgba(34,211,238,.12), transparent), radial-gradient(900px 500px at 80% 20%, rgba(16,185,129,.12), transparent), var(--bg); color: var(--text); margin: 0; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px; }
+      header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+      .brand { display: flex; gap: 10px; align-items: center; font-weight: 700; letter-spacing: .3px; }
+      .brand .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: grid; place-items: center; color: #052e2b; font-weight: 900; }
+      .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; }
+      .hero h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 10px; }
+      .hero p { color: var(--muted); margin: 0 0 16px; }
+      .card { background: var(--panel); border: 1px solid #1f2937; border-radius: 14px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+      label { font-size: .9rem; color: var(--muted); display: block; margin: 8px 0 6px; }
+      input, button { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #1f2937; background: #0b1220; color: var(--text); }
+      input:focus, button:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
+      button.primary { background: var(--primary); color: #052e2b; border: none; font-weight: 700; cursor: pointer; margin-top: 12px; }
+      .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .hint { color: var(--muted); font-size: .9rem; }
+      .illu { aspect-ratio: 4/3; border-radius: 14px; border: 1px solid #1f2937; background: linear-gradient(135deg, rgba(34,211,238,.15), transparent), url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat; box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+      @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .illu { order: -1; height: 220px; } }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Conversor de Divisas</h1>
-      <div id="updatedBadge" class="badge" style="display:none">divisas actualizadas</div>
-      <p class="sub">Usa tasas en vivo con límite de 2 actualizaciones por día (caché local).</p>
+    <div class="wrap">
+      <header>
+        <div class="brand"><div class="logo">✈︎</div> Blog Viajes 2025</div>
+        <nav class="hint">Convierte divisas para tu próximo viaje</nav>
+      </header>
 
-      <div class="row3">
+      <section class="hero">
         <div>
-          <label for="amount">Monto</label>
-          <div class="input-wrap amount">
-            <span class="prefix" id="currencySymbol">$</span>
-            <input id="amount" type="number" step="0.01" min="0" placeholder="0.00" value="100" />
+          <h1>Planifica tu próximo viaje con divisas claras</h1>
+          <p>Regístrate o inicia sesión para guardar tus preferencias y convertir divisas al instante. Sin complicaciones, con estilo viajero.</p>
+          <div class="two">
+            <div class="card">
+              <h3>Iniciar sesión</h3>
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" type="email" placeholder="tú@correo.com" />
+              <label for="loginPass">Contraseña</label>
+              <input id="loginPass" type="password" placeholder="••••••••" />
+              <button id="loginBtn" class="primary">Entrar</button>
+            </div>
+            <div class="card">
+              <h3>Crear cuenta</h3>
+              <label for="regName">Nombre de viajero</label>
+              <input id="regName" type="text" placeholder="Aventurero/a" />
+              <label for="regEmail">Email</label>
+              <input id="regEmail" type="email" placeholder="tú@correo.com" />
+              <label for="regPass">Contraseña</label>
+              <input id="regPass" type="password" placeholder="••••••••" />
+              <button id="regBtn" class="primary">Registrarme</button>
+              <p class="hint">Al registrarte se creará tu espacio personal y te llevaremos al conversor.</p>
+            </div>
           </div>
         </div>
-        <div>
-          <label for="from">Desde</label>
-          <div class="select">
-            <select id="from">
-              <option value="USD" selected>USD</option>
-              <option value="EUR">EUR</option>
-              <option value="MXN">MXN</option>
-              <option value="ARS">ARS</option>
-              <option value="COP">COP</option>
-              <option value="CLP">CLP</option>
-              <option value="PEN">PEN</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
-              <option value="BRL">BRL</option>
-              <option value="CAD">CAD</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label for="to">Hacia</label>
-          <div class="select">
-            <select id="to">
-              <option value="USD">USD</option>
-              <option value="EUR" selected>EUR</option>
-              <option value="MXN">MXN</option>
-              <option value="ARS">ARS</option>
-              <option value="COP">COP</option>
-              <option value="CLP">CLP</option>
-              <option value="PEN">PEN</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
-              <option value="BRL">BRL</option>
-              <option value="CAD">CAD</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button id="convert" class="primary">Convertir</button>
-        <button id="swap">Intercambiar</button>
-        
-      </div>
-
-      <div class="result" id="output">—</div>
+        <div class="illu" aria-hidden="true"></div>
+      </section>
     </div>
 
     <script>
-      const SUPPORTED = [
-        "USD","EUR","MXN","ARS","COP","CLP","PEN","GBP","JPY","BRL","CAD"
-      ];
-      const SYMBOLS = {
-        USD: '$', EUR: '€', MXN: 'MX$', ARS: 'AR$', COP: 'COP$', CLP: 'CLP$', PEN: 'S/', GBP: '£', JPY: '¥', BRL: 'R$', CAD: 'C$'
-      };
-      const DEFAULTS = {
-        USD: 1,
-        EUR: 0.92,
-        MXN: 19.8,
-        ARS: 980,
-        COP: 3940,
-        CLP: 910,
-        PEN: 3.75,
-        GBP: 0.78,
-        JPY: 146.5,
-        BRL: 5.1,
-        CAD: 1.36,
-      };
-
+      const DB_KEY = 'bv2025_db';
       const $ = (id) => document.getElementById(id);
-      const todayStr = () => new Date().toISOString().slice(0,10);
-  const CACHE_KEY = 'ratesCacheV1';
-  let IN_MEMORY_RATES = null;
+      function loadDB(){ try { return JSON.parse(localStorage.getItem(DB_KEY)) || { users: [], sessions: [] }; } catch { return { users: [], sessions: [] }; } }
+      function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+      function slugify(name){ return String(name||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 
-      function loadCache(){
-        try {
-          const raw = localStorage.getItem(CACHE_KEY);
-          if(!raw) return null;
-          return JSON.parse(raw);
-        } catch { return null; }
+      function register(){
+        const name = $('regName').value.trim();
+        const email = $('regEmail').value.trim().toLowerCase();
+        const pass = $('regPass').value;
+        if(!name || !email || !pass){ alert('Completa todos los campos'); return; }
+        const db = loadDB();
+        if (db.users.some(u => u.email === email)) { alert('Ese email ya está registrado'); return; }
+        const user = { id: crypto.randomUUID(), name, email, pass, slug: slugify(name), createdAt: new Date().toISOString() };
+        db.users.push(user);
+        db.sessions = [{ userId: user.id, at: new Date().toISOString() }];
+        saveDB(db);
+        history.replaceState({}, '', `#/viajero/${user.slug}`);
+        location.href = '/divisas?user=' + encodeURIComponent(user.slug);
       }
 
-      function saveCache(obj){
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch {}
+      function login(){
+        const email = $('loginEmail').value.trim().toLowerCase();
+        const pass = $('loginPass').value;
+        const db = loadDB();
+        const user = db.users.find(u => u.email === email && u.pass === pass);
+        if(!user){ alert('Credenciales inválidas'); return; }
+        db.sessions = [{ userId: user.id, at: new Date().toISOString() }];
+        saveDB(db);
+        history.replaceState({}, '', `#/viajero/${user.slug}`);
+        location.href = '/divisas?user=' + encodeURIComponent(user.slug);
       }
 
-      function getRatesFromCache(){
-        const cache = loadCache();
-        if(cache && cache.rates){ return cache; }
-        return null;
-      }
-
-  function currentRates(){
-    if (IN_MEMORY_RATES) return { ...IN_MEMORY_RATES };
-    const c = getRatesFromCache();
-    if(!c) return {...DEFAULTS};
-    const out = {...DEFAULTS};
-    for(const k of Object.keys(c.rates)){
-      if(SUPPORTED.includes(k)) out[k] = Number(c.rates[k]);
-    }
-    return out;
-  }
-
-  async function fetchRates(){
-        const url = 'https://api.exchangerate.host/latest?base=USD';
-        const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
-        if(!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        if(!data || !data.rates) throw new Error('Respuesta inválida');
-        const out = { USD: 1 };
-        for(const k of SUPPORTED){
-          if(typeof data.rates[k] === 'number') out[k] = data.rates[k];
-        }
-    return out;
-  }
-
-  async function fetchServerRates(){
-    try {
-      const resp = await fetch('/rates.json?v=' + Date.now(), { cache: 'no-store' });
-      if(!resp.ok) return null;
-      const data = await resp.json();
-      if(!data || !data.rates) return null;
-      const out = { ...DEFAULTS };
-      for(const k of SUPPORTED){
-        if(typeof data.rates[k] === 'number') out[k] = data.rates[k];
-      }
-      IN_MEMORY_RATES = out;
-      saveCache({ last_updated: data.last_updated, day: todayStr(), fetch_count: 2, rates: out });
-      setMeta({ last_updated: data.last_updated });
-      const badge = document.getElementById('updatedBadge');
-      if (badge){
-        const when = formatMadridShort(data.last_updated);
-        badge.textContent = when ? `divisas actualizadas · ${when}` : 'divisas actualizadas';
-        badge.style.display = 'block';
-      }
-      return out;
-    } catch (e) {
-      console.warn('No server rates.json yet', e);
-      return null;
-    }
-  }
-
-      function remainingUpdates(){
-        const c = loadCache();
-        if(!c || c.day !== todayStr()) return 2;
-        const used = Number(c.fetch_count || 0);
-        return Math.max(0, 2 - used);
-      }
-
-      async function updateFromAPI(auto=false){
-        const remain = remainingUpdates();
-        if(remain <= 0){
-          if(auto) setLimitText();
-          else alert('Límite diario alcanzado (2 actualizaciones).');
-          return false;
-        }
-        try {
-          const rates = await fetchRates();
-          const c = loadCache() || {};
-          const day = todayStr();
-          const count = (c.day === day ? Number(c.fetch_count||0) : 0) + 1;
-          const cacheData = {
-            last_updated: new Date().toISOString(),
-            day,
-            fetch_count: count,
-            rates,
-          };
-          saveCache(cacheData);
-          setMeta(cacheData);
-          setLimitText();
-          return true;
-        } catch (e){
-          console.error(e);
-          if(!auto) alert('No se pudo actualizar desde la API.');
-          return false;
-        }
-      }
-
-      function updateCurrencySymbol(){
-        const from = $('from').value;
-        $('currencySymbol').textContent = SYMBOLS[from] || '';
-      }
-
-      function msUntilNext(hour){
-        const now = new Date();
-        const target = new Date(now);
-        target.setHours(hour, 0, 0, 0);
-        if (target <= now) target.setDate(target.getDate() + 1);
-        return target - now;
-      }
-
-      function scheduleDailyUpdates(){
-        const schedule = (hour) => {
-          const delay = msUntilNext(hour);
-          setTimeout(function run(){
-            updateFromAPI(true).then(convert);
-            setTimeout(run, 24*60*60*1000);
-          }, delay);
-        };
-        schedule(0);  // 12am
-        schedule(12); // 12pm
-      }
-
-      function formatMadridShort(iso){
-        try {
-          const d = new Date(iso);
-          const parts = new Intl.DateTimeFormat('es-ES', {
-            timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit',
-            timeZoneName: 'short', hour12: false
-          }).formatToParts(d);
-          const h = parts.find(p=>p.type==='hour')?.value || '';
-          const m = parts.find(p=>p.type==='minute')?.value || '';
-          const tz = parts.find(p=>p.type==='timeZoneName')?.value || '';
-          return `${h}:${m} ${tz}`.trim();
-        } catch { return ''; }
-      }
-
-      function formatMadridLong(iso){
-        try {
-          const d = new Date(iso);
-          return new Intl.DateTimeFormat('es-ES', {
-            timeZone: 'Europe/Madrid', dateStyle: 'medium', timeStyle: 'short'
-          }).format(d);
-        } catch { return iso; }
-      }
-
-      function setMeta(cache){
-        const el = $('meta');
-        if (!el) return;
-        const c = cache || loadCache();
-        el.textContent = c && c.last_updated
-          ? `Última actualización (España): ${formatMadridLong(c.last_updated)}`
-          : '';
-      }
-
-  function setLimitText(){
-    const el = $('limit');
-    if (!el) return;
-    el.textContent = '';
-  }
-
-      function convert(){
-        const amount = Number(($('amount').value || '').replace(',', '.'));
-        if(!(amount >= 0)) { $('output').textContent = 'Monto inválido'; return; }
-        const from = $('from').value;
-        const to = $('to').value;
-        if(!SUPPORTED.includes(from) || !SUPPORTED.includes(to)) return;
-        const rates = currentRates();
-        const usd = amount / Number(rates[from]);
-        const res = usd * Number(rates[to]);
-        $('output').textContent = `${amount.toFixed(2)} ${from} = ${res.toFixed(2)} ${to}`;
-      }
-
-      function swap(){
-        const a = $('from').value; const b = $('to').value;
-        $('from').value = b; $('to').value = a;
-        updateCurrencySymbol();
-        convert();
-      }
-
-  async function init(){
-    setMeta();
-    setLimitText();
-    await fetchServerRates();
-    convert();
-    $('convert').addEventListener('click', convert);
-    $('swap').addEventListener('click', swap);
-    $('amount').addEventListener('input', convert);
-    $('from').addEventListener('change', () => { updateCurrencySymbol(); convert(); });
-    $('to').addEventListener('change', convert);
-    updateCurrencySymbol();
-  }
-
-      init();
+      $('regBtn').addEventListener('click', register);
+      $('loginBtn').addEventListener('click', login);
     </script>
   </body>
   </html>

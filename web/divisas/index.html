@@ -15,7 +15,7 @@
       }
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); margin: 0; }
       .container { position: relative; max-width: 760px; margin: 40px auto; padding: 24px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
-      h1 { margin: 0 0 12px; font-size: 1.6rem; }
+      h1 { margin: 0 0 12px; font-size: 1.6rem; text-align: center; }
       p.sub { margin: 0 0 20px; color: var(--muted); }
       .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
       .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
@@ -72,11 +72,10 @@
     <div class="container">
       <h1>Conversor de Divisas</h1>
       <div id="updatedBadge" class="badge" style="display:none">divisas actualizadas</div>
-      <p class="sub">Usa tasas en vivo con límite de 2 actualizaciones por día (caché local).</p>
 
       <div class="row3">
         <div>
-          <label for="amount">Monto</label>
+          <label for="amount">Cantidad</label>
           <div class="input-wrap amount">
             <span class="prefix" id="currencySymbol">$</span>
             <input id="amount" type="number" step="0.01" min="0" placeholder="0.00" value="100" />
@@ -258,4 +257,3 @@
     </script>
   </body>
   </html>
-
