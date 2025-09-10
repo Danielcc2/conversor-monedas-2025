@@ -241,6 +241,16 @@
         if (SUPPORTED.includes(data.default_from)) $('from').value = data.default_from;
         if (SUPPORTED.includes(data.default_to)) $('to').value = data.default_to;
         updateCurrencySymbol();
+      } else {
+        // Semilla automática en el primer login
+        const seedFrom = SUPPORTED.includes(($('from').value||'')) ? $('from').value : 'USD';
+        const seedTo = SUPPORTED.includes(($('to').value||'')) ? $('to').value : 'EUR';
+        await supabase.from('preferences').upsert({
+          user_id: user.id,
+          default_from: seedFrom,
+          default_to: seedTo,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
       }
     } catch(e){ /* noop */ }
   }
