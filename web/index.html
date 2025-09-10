@@ -127,19 +127,15 @@
       </div>
 
       <div class="result" id="output">—</div>
-      <div class="muted" id="meta"></div>
-      <div class="muted" id="limit"></div>
-
-      <footer>
-        Base: 1 USD equivale a X unidades de moneda. API: exchangerate.host
-      </footer>
     </div>
 
     <script>
       const SUPPORTED = [
         "USD","EUR","MXN","ARS","COP","CLP","PEN","GBP","JPY","BRL","CAD"
       ];
-      const SYMBOLS = { USD: '$', EUR: '€', MXN: '$', ARS: '$', COP: '$', CLP: '$', PEN: 'S/', GBP: '£', JPY: '¥', BRL: 'R$', CAD: '$' };
+      const SYMBOLS = {
+        USD: '$', EUR: '€', MXN: 'MX$', ARS: '$', COP: 'COP$', CLP: 'CLP$', PEN: 'S/', GBP: '£', JPY: '¥', BRL: 'R$', CAD: 'C$'
+      };
       const DEFAULTS = {
         USD: 1,
         EUR: 0.92,
@@ -312,17 +308,18 @@
       }
 
       function setMeta(cache){
+        const el = $('meta');
+        if (!el) return;
         const c = cache || loadCache();
-        if(c && c.last_updated){
-          $('meta').textContent = `Última actualización (España): ${formatMadridLong(c.last_updated)}`;
-        } else {
-          $('meta').textContent = 'Usando tasas por defecto/caché.';
-        }
+        el.textContent = c && c.last_updated
+          ? `Última actualización (España): ${formatMadridLong(c.last_updated)}`
+          : '';
       }
 
   function setLimitText(){
-    $('limit').textContent = 'Actualización automática del servidor: 12am y 12pm (España)';
-    $('limit').className = 'muted';
+    const el = $('limit');
+    if (!el) return;
+    el.textContent = '';
   }
 
       function convert(){
