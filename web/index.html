@@ -10,16 +10,23 @@
     <style>
       :root { --bg: #0b1220; --panel: #0f172a; --text: #e5e7eb; --muted: #9ca3af; --primary: #10b981; --accent: #22d3ee; }
       * { box-sizing: border-box; }
-      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; background: radial-gradient(1200px 600px at 20% 10%, rgba(34,211,238,.12), transparent), radial-gradient(900px 500px at 80% 20%, rgba(16,185,129,.12), transparent), var(--bg); color: var(--text); margin: 0; }
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; background: var(--bg); color: var(--text); margin: 0; }
       .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
-      header { position: sticky; top:0; margin-bottom: 24px; z-index:50 }
+      header { position: sticky; top:0; margin-bottom: 24px; z-index:50; backdrop-filter: blur(6px); background: linear-gradient(to bottom, rgba(11,18,32,.85), rgba(11,18,32,.35)); }
       .mainnav { display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:18px; }
       .nav-left,.nav-right{ display:flex; gap:22px; align-items:center; justify-content:flex-start }
       .nav-right{ justify-content:flex-end }
       .mainnav a { color:#e5e7eb; text-decoration:none; font-weight:700; font-family:'Sora',ui-sans-serif,system-ui }
       .mainnav a.locked { opacity:.5; cursor:not-allowed }
-      .nav-logo img{ width:64px; height:64px }
-      .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; }
+      .nav-logo img{ width:68px; height:68px }
+      .hero { position: relative; display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; }
+      .hero-bg { position:absolute; inset:0; background: url('https://images.unsplash.com/photo-1445307806294-bff7f67ff225?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat; filter: brightness(.55); z-index: -1; }
+      .overlay h1 { font-family: 'Sora', ui-sans-serif, system-ui; font-weight: 800; font-size: 2.2rem; margin: 0 0 8px; }
+      .overlay p { color: #cbd5e1; margin: 0 0 18px; }
+      .sections { margin-top: 28px; display:grid; grid-template-columns: repeat(3,1fr); gap:14px }
+      .section-card { background: rgba(17,24,39,.7); border:1px solid #1f2937; border-radius:12px; padding:14px }
+      .section-card h3 { margin:0 0 6px }
+      @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .illu { order: -1; height: 220px; } .sections{ grid-template-columns:1fr } }
       .nav { display:flex; gap: 24px; align-items:center; font-weight:700; font-family: 'Sora', ui-sans-serif, system-ui; }
       .nav a { color: #e5e7eb; text-decoration:none; font-size: 1rem; }
       .nav a.locked { opacity:.5; cursor:not-allowed; }
@@ -52,7 +59,12 @@
             <a href="#" data-route="/blog" class="locked">Blog</a>
             <a href="#" data-route="/destinos" class="locked">Destinos</a>
           </div>
-          <a class="nav-logo" href="/"><img src="/assets/logo.svg" alt="Dael‑viajes"></a>
+          <a class="nav-logo" href="/">
+            <picture>
+              <source srcset="/assets/logo.png" type="image/png">
+              <img src="/assets/logo.svg" alt="Dael‑viajes">
+            </picture>
+          </a>
           <div class="nav-right">
             <a href="#" data-route="/presupuestos" class="locked">Presupuestos</a>
             <a href="#" data-route="/consejos" class="locked">Consejos</a>
@@ -70,9 +82,12 @@
       </header>
 
       <section class="hero">
+        <div class="hero-bg" aria-hidden="true"></div>
         <div>
-          <h1>Planifica tu próximo viaje con divisas claras</h1>
-          <p>Regístrate o inicia sesión para guardar tus preferencias y convertir divisas al instante. Sin complicaciones, con estilo viajero.</p>
+          <div class="overlay">
+            <h1>Inspírate para viajar de forma independiente</h1>
+            <p>Guías de viaje, consejos y fotografías alrededor del mundo</p>
+          </div>
           <div class="two">
             <div class="card">
               <h3>Iniciar sesión</h3>
@@ -93,6 +108,13 @@
               <button id="regBtn" class="primary">Registrarme</button>
               <p class="hint">Al registrarte se creará tu espacio personal y te llevaremos al conversor.</p>
             </div>
+          </div>
+          <div class="sections">
+            <div class="section-card"><h3>Blog</h3><p>Sección con artículos de viajes, experiencias e historias.</p></div>
+            <div class="section-card"><h3>Destinos</h3><p>Información sobre países, ciudades y lugares recomendados.</p></div>
+            <div class="section-card"><h3>Presupuestos</h3><p>Consejos y ejemplos de gastos aproximados por destino.</p></div>
+            <div class="section-card"><h3>Consejos</h3><p>Tips de viaje, seguridad, transporte y cultura local.</p></div>
+            <div class="section-card"><h3>Diario</h3><p>Relatos personales y diarios de viaje.</p></div>
           </div>
         </div>
         <div class="illu" aria-hidden="true"></div>
